@@ -3,18 +3,15 @@ import './App.css';
 
 // ============ DASHBOARD COMPONENT ============
 const StatisticsDashboard = ({ students }) => {
-  // Calculate statistics
   const totalStudents = students.length;
   const maleCount = students.filter(s => s.gender === 'MALE').length;
   const femaleCount = students.filter(s => s.gender === 'FEMALE').length;
   
-  // Group by course
   const courseStats = {};
   students.forEach(s => {
     courseStats[s.course] = (courseStats[s.course] || 0) + 1;
   });
   
-  // Age distribution
   const ageGroups = {
     'Under 18': students.filter(s => s.age < 18).length,
     '18-20': students.filter(s => s.age >= 18 && s.age <= 20).length,
@@ -22,12 +19,10 @@ const StatisticsDashboard = ({ students }) => {
     'Above 23': students.filter(s => s.age > 23).length
   };
   
-  // Recent students (last 5 by id)
   const recentStudents = [...students].reverse().slice(0, 5);
   
   return (
     <div className="dashboard-stats">
-      {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card blue">
           <i className="fas fa-users"></i>
@@ -59,7 +54,6 @@ const StatisticsDashboard = ({ students }) => {
         </div>
       </div>
       
-      {/* Charts Row */}
       <div className="charts-row">
         <div className="chart-card">
           <h4><i className="fas fa-chart-pie"></i> Wanafunzi kwa Jinsia</h4>
@@ -89,7 +83,6 @@ const StatisticsDashboard = ({ students }) => {
         </div>
       </div>
       
-      {/* Top Courses */}
       <div className="courses-card">
         <h4><i className="fas fa-trophy"></i> Kozi Zilizo na Wanafunzi Wengi</h4>
         <div className="courses-list">
@@ -108,13 +101,16 @@ const StatisticsDashboard = ({ students }) => {
         </div>
       </div>
       
-      {/* Recent Students */}
       <div className="recent-card">
         <h4><i className="fas fa-clock"></i> Wanafunzi Waliojiunga Hivi Karibuni</h4>
         <div className="recent-list">
           {recentStudents.map(student => (
             <div key={student.id} className="recent-item">
-              <i className="fas fa-user-graduate"></i>
+              {student.photo ? (
+                <img src={student.photo} alt={student.fullName} className="recent-photo" />
+              ) : (
+                <i className="fas fa-user-graduate"></i>
+              )}
               <span><strong>{student.fullName}</strong> - {student.course}</span>
               <small>{student.gender === 'MALE' ? '👨' : '👩'}</small>
             </div>
@@ -142,8 +138,9 @@ function App() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showDashboard, setShowDashboard] = useState(true);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [formData, setFormData] = useState({ 
-    fullName: '', age: '', course: '', gender: '', phone: '', email: '' 
+    fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState(null);
@@ -175,29 +172,27 @@ function App() {
   const canDelete = userRole === 'admin';
   const canAdd = userRole === 'admin';
 
-  // ============ FETCH STUDENTS FROM DATABASE ============
+  // ============ FETCH STUDENTS ============
   const fetchStudents = useCallback(async () => {
-  setLoading(true);
-  try {
-    const response = await fetch(`${API_URL}/students`);
-    if (!response.ok) throw new Error('Failed to fetch');
-    const data = await response.json();
-    setStudents(data);
-  } catch (error) {
-    console.error('Error fetching students:', error);
-  } finally {
-    setLoading(false);
-  }
-}, [API_URL]);
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/students`);
+      if (!response.ok) throw new Error('Failed to fetch');
+      const data = await response.json();
+      setStudents(data);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [API_URL]);
 
-  // ============ LOAD STUDENTS WHEN LOGGED IN ============
   useEffect(() => {
-  if (isLoggedIn) {
-    fetchStudents();
-  }
-}, [isLoggedIn, fetchStudents]);  // ← fetchStudents imeongezwa
+    if (isLoggedIn) {
+      fetchStudents();
+    }
+  }, [isLoggedIn, fetchStudents]);
 
-  // ============ SET PAGE TITLE ============
   useEffect(() => {
     document.title = 'Katwe Secondary School | Student Management System';
   }, []);
@@ -249,7 +244,34 @@ function App() {
     setStudents([]);
   };
 
-  // ============ STUDENT CRUD OPERATIONS ============
+  // ============ PHOTO UPLOAD ============
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const formDataPhoto = new FormData();
+    formDataPhoto.append('photo', file);
+    
+    setUploadingPhoto(true);
+    try {
+      const response = await fetch(`${API_URL}/upload-photo`, {
+        method: 'POST',
+        body: formDataPhoto
+      });
+      const data = await response.json();
+      if (data.success) {
+        setFormData(prev => ({ ...prev, photo: data.imageUrl }));
+        alert('✅ Picha imepakiwa!');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('❌ Imeshindwa kupakia picha');
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  // ============ STUDENT CRUD ============
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -280,7 +302,7 @@ function App() {
       
       alert(editingId ? '✅ Mwanafunzi amesasishwa!' : '✅ Mwanafunzi amehifadhiwa!');
       fetchStudents();
-      setFormData({ fullName: '', age: '', course: '', gender: '', phone: '', email: '' });
+      setFormData({ fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: '' });
       setEditingId(null);
     } catch (error) {
       console.error('Error saving student:', error);
@@ -315,7 +337,7 @@ function App() {
     }
   };
 
-  // ============ MATOKEO MODAL FUNCTIONS ============
+  // ============ MATOKEO MODAL ============
   const openResultsModal = (student) => {
     setSelectedStudent(student);
     setResultsData({
@@ -392,7 +414,6 @@ function App() {
     s.course?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // ============ DOWNLOAD CSV ============
   const downloadCSV = () => {
     const headers = ["JINA KAMILI", "UMRI", "JINSIA", "KOZI", "NAMBA YA SIMU", "EMAIL"];
     const rows = students.map(s => [`"${s.fullName}"`, s.age, s.gender, `"${s.course}"`, `"${s.phone || ''}"`, `"${s.email || ''}"`]);
@@ -556,6 +577,27 @@ function App() {
                     <label>Barua pepe (Email)</label>
                     <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="mwanafunzi@email.com" disabled={!canAdd} />
                   </div>
+                  
+                  {/* PHOTO UPLOAD SECTION */}
+                  <div className="form-group">
+                    <label>PICHA YA MWANAFUNZI</label>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      disabled={!canAdd || uploadingPhoto}
+                    />
+                    {uploadingPhoto && <div className="uploading-text"><i className="fas fa-spinner fa-spin"></i> Inapakia picha...</div>}
+                    {formData.photo && (
+                      <div className="photo-preview">
+                        <img src={formData.photo} alt="Student" />
+                        <button type="button" onClick={() => setFormData({...formData, photo: ''})} className="btn-remove-photo">
+                          <i className="fas fa-trash"></i> Futa Picha
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  
                   {canAdd && (
                     <button type="submit" className="btn btn-primary">
                       <i className="fas fa-save"></i> {editingId ? 'SASISHA' : 'HIFADHI'}
@@ -582,19 +624,31 @@ function App() {
                 {loading && <div className="loading-spinner">Inapakia data...</div>}
                 
                 <div className="table-wrapper">
-                  <table>
+                  <table className="student-table">
                     <thead>
                       <tr>
-                        <th>JINA</th><th>KOZI</th><th>SIMU</th><th>EMAIL</th><th>VITENDO</th>
+                        <th>PICHA</th>
+                        <th>JINA</th>
+                        <th>KOZI</th>
+                        <th>SIMU</th>
+                        <th>EMAIL</th>
+                        <th>VITENDO</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredStudents.length === 0 && !loading ? (
-                        <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>📭 Hakuna wanafunzi waliosajiliwa</td></tr>
+                        <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>📭 Hakuna wanafunzi waliosajiliwa</td></tr>
                       ) : (
                         filteredStudents.map(student => (
                           <tr key={student.id}>
-                            <td><strong>{student.fullName}</strong> ({student.age})<br/><small>{student.gender}</small></td>
+                            <td className="photo-cell">
+                              {student.photo ? (
+                                <img src={student.photo} alt={student.fullName} className="student-thumb" />
+                              ) : (
+                                <div className="no-photo">📷</div>
+                              )}
+                            </td>
+                            <td><strong>{student.fullName}</strong><br/><small>{student.age} yrs | {student.gender}</small></td>
                             <td>{student.course}</td>
                             <td>{student.phone || '—'}</td>
                             <td>{student.email || '—'}</td>
@@ -630,24 +684,28 @@ function App() {
                 </div>
                 <div className="modal-body">
                   <div className="results-form">
-                    <h3>Somo la 1</h3>
-                    <div className="subject-row">
-                      <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} />
-                      <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange}>
-                        <option value="">Daraja</option>
-                        <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                        <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                      </select>
+                    <div className="form-group">
+                      <label>SOMO LA 1</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} />
+                        <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange}>
+                          <option value="">Daraja</option>
+                          <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
+                          <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
                     
-                    <h3>Somo la 2</h3>
-                    <div className="subject-row">
-                      <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} />
-                      <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange}>
-                        <option value="">Daraja</option>
-                        <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                        <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                      </select>
+                    <div className="form-group">
+                      <label>SOMO LA 2</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} />
+                        <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange}>
+                          <option value="">Daraja</option>
+                          <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
+                          <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
                     
                     <div className="form-group">
