@@ -1,6 +1,134 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
+// ============ DASHBOARD COMPONENT ============
+const StatisticsDashboard = ({ students }) => {
+  // Calculate statistics
+  const totalStudents = students.length;
+  const maleCount = students.filter(s => s.gender === 'MALE').length;
+  const femaleCount = students.filter(s => s.gender === 'FEMALE').length;
+  
+  // Group by course
+  const courseStats = {};
+  students.forEach(s => {
+    courseStats[s.course] = (courseStats[s.course] || 0) + 1;
+  });
+  
+  // Age distribution
+  const ageGroups = {
+    'Under 18': students.filter(s => s.age < 18).length,
+    '18-20': students.filter(s => s.age >= 18 && s.age <= 20).length,
+    '21-23': students.filter(s => s.age >= 21 && s.age <= 23).length,
+    'Above 23': students.filter(s => s.age > 23).length
+  };
+  
+  // Recent students (last 5 by id)
+  const recentStudents = [...students].reverse().slice(0, 5);
+  
+  return (
+    <div className="dashboard-stats">
+      {/* Stats Cards */}
+      <div className="stats-grid">
+        <div className="stat-card blue">
+          <i className="fas fa-users"></i>
+          <div className="stat-info">
+            <h3>{totalStudents}</h3>
+            <p>Jumla ya Wanafunzi</p>
+          </div>
+        </div>
+        <div className="stat-card green">
+          <i className="fas fa-venus"></i>
+          <div className="stat-info">
+            <h3>{femaleCount}</h3>
+            <p>Wanawake</p>
+          </div>
+        </div>
+        <div className="stat-card orange">
+          <i className="fas fa-mars"></i>
+          <div className="stat-info">
+            <h3>{maleCount}</h3>
+            <p>Wanaume</p>
+          </div>
+        </div>
+        <div className="stat-card purple">
+          <i className="fas fa-book"></i>
+          <div className="stat-info">
+            <h3>{Object.keys(courseStats).length}</h3>
+            <p>Kozi Zilizopo</p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Charts Row */}
+      <div className="charts-row">
+        <div className="chart-card">
+          <h4><i className="fas fa-chart-pie"></i> Wanafunzi kwa Jinsia</h4>
+          <div className="gender-chart">
+            <div className="gender-bar male" style={{ width: `${(maleCount/totalStudents)*100}%` }}>
+              {maleCount} Wanaume
+            </div>
+            <div className="gender-bar female" style={{ width: `${(femaleCount/totalStudents)*100}%` }}>
+              {femaleCount} Wanawake
+            </div>
+          </div>
+        </div>
+        
+        <div className="chart-card">
+          <h4><i className="fas fa-chart-line"></i> Umri wa Wanafunzi</h4>
+          <div className="age-stats">
+            {Object.entries(ageGroups).map(([group, count]) => (
+              <div key={group} className="age-item">
+                <span>{group}</span>
+                <div className="age-bar-container">
+                  <div className="age-bar" style={{ width: `${(count/totalStudents)*100}%` }}></div>
+                </div>
+                <span className="age-count">{count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      {/* Top Courses */}
+      <div className="courses-card">
+        <h4><i className="fas fa-trophy"></i> Kozi Zilizo na Wanafunzi Wengi</h4>
+        <div className="courses-list">
+          {Object.entries(courseStats)
+            .sort((a,b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([course, count]) => (
+              <div key={course} className="course-item">
+                <span>{course}</span>
+                <div className="course-bar-container">
+                  <div className="course-bar" style={{ width: `${(count/totalStudents)*100}%` }}></div>
+                </div>
+                <span className="course-count">{count} wanafunzi</span>
+              </div>
+            ))}
+        </div>
+      </div>
+      
+      {/* Recent Students */}
+      <div className="recent-card">
+        <h4><i className="fas fa-clock"></i> Wanafunzi Waliojiunga Hivi Karibuni</h4>
+        <div className="recent-list">
+          {recentStudents.map(student => (
+            <div key={student.id} className="recent-item">
+              <i className="fas fa-user-graduate"></i>
+              <span><strong>{student.fullName}</strong> - {student.course}</span>
+              <small>{student.gender === 'MALE' ? '👨' : '👩'}</small>
+            </div>
+          ))}
+          {recentStudents.length === 0 && (
+            <div className="no-data">Hakuna wanafunzi waliopo</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============ MAIN APP COMPONENT ============
 function App() {
   // ============ STATE ZA LOGIN ============
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,6 +141,7 @@ function App() {
   // ============ STATE ZA WANAFUNZI ============
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(true);
   const [formData, setFormData] = useState({ 
     fullName: '', age: '', course: '', gender: '', phone: '', email: '' 
   });
@@ -33,7 +162,7 @@ function App() {
   });
 
   // ============ API BASE URL ============
-  const API_URL = 'http://localhost:5002/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
 
   // ============ USER CREDENTIALS ============
   const users = {
@@ -47,27 +176,26 @@ function App() {
   const canAdd = userRole === 'admin';
 
   // ============ FETCH STUDENTS FROM DATABASE ============
-  const fetchStudents = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/students`);
-      if (!response.ok) throw new Error('Failed to fetch');
-      const data = await response.json();
-      setStudents(data);
-    } catch (error) {
-      console.error('Error fetching students:', error);
-      alert('Imeshindwa kupata data kutoka database. Hakikisha backend inaendesha!');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchStudents = useCallback(async () => {
+  setLoading(true);
+  try {
+    const response = await fetch(`${API_URL}/students`);
+    if (!response.ok) throw new Error('Failed to fetch');
+    const data = await response.json();
+    setStudents(data);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+  } finally {
+    setLoading(false);
+  }
+}, [API_URL]);
 
   // ============ LOAD STUDENTS WHEN LOGGED IN ============
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchStudents();
-    }
-  }, [isLoggedIn]);
+  if (isLoggedIn) {
+    fetchStudents();
+  }
+}, [isLoggedIn, fetchStudents]);  // ← fetchStudents imeongezwa
 
   // ============ SET PAGE TITLE ============
   useEffect(() => {
@@ -156,7 +284,7 @@ function App() {
       setEditingId(null);
     } catch (error) {
       console.error('Error saving student:', error);
-      alert('❌ Kuna tatizo, jaribu tena! Hakikisha backend iko running.');
+      alert('❌ Kuna tatizo, jaribu tena!');
     }
   };
 
@@ -177,8 +305,7 @@ function App() {
     
     if (window.confirm('Je, una uhakika unataka kufuta mwanafunzi huyu?')) {
       try {
-        const response = await fetch(`${API_URL}/students/${id}`, { method: 'DELETE' });
-        if (!response.ok) throw new Error('Failed to delete');
+        await fetch(`${API_URL}/students/${id}`, { method: 'DELETE' });
         alert('✅ Mwanafunzi amefutwa!');
         fetchStudents();
       } catch (error) {
@@ -208,23 +335,17 @@ function App() {
   };
 
   const sendEmail = async (student, results) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const emailContent = `TO: ${student.email}\nSUBJECT: Matokeo ya Mitihani - ${student.fullName}\n\nHABARI ${student.fullName},\n\nMatokeo yako:\n${results.subject1}: ${results.grade1}\n${results.subject2}: ${results.grade2}\n${results.subject3}: ${results.grade3}\n${results.subject4}: ${results.grade4}\n\nMAONI: ${results.remarks}\n\nAsante,\nKatwe Secondary School`;
-        console.log('📧 Email sent:', emailContent);
-        resolve(true);
-      }, 1000);
-    });
-  };
-
-  const sendSMS = async (student, results) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const smsContent = `Katwe School: ${student.fullName}, Matokeo: ${results.subject1}=${results.grade1}, ${results.subject2}=${results.grade2}, ${results.subject3}=${results.grade3}. ${results.remarks}`;
-        console.log('📱 SMS sent to', student.phone, ':', smsContent);
-        resolve(true);
-      }, 1000);
-    });
+    try {
+      const response = await fetch(`${API_URL}/send-results`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student, results })
+      });
+      return response.ok;
+    } catch (error) {
+      console.error('Email error:', error);
+      return false;
+    }
   };
 
   const handleSendResults = async () => {
@@ -247,24 +368,18 @@ function App() {
           setSendingStatus('');
           return;
         }
-        await sendEmail(selectedStudent, resultsData);
-        alert(`✅ Matokeo yametumwa kwa email ya ${selectedStudent.email}`);
-      } else if (resultsData.sendMethod === 'sms') {
-        if (!selectedStudent.phone) {
-          alert('Mwanafunzi hana namba ya simu!');
-          setSendingStatus('');
-          return;
+        const success = await sendEmail(selectedStudent, resultsData);
+        if (success) {
+          alert(`✅ Matokeo yametumwa kwa email ya ${selectedStudent.email}`);
+          setShowModal(false);
+        } else {
+          alert('❌ Imeshindwa kutuma email. Jaribu tena!');
         }
-        await sendSMS(selectedStudent, resultsData);
-        alert(`✅ Matokeo yametumwa kwa namba ${selectedStudent.phone}`);
+      } else if (resultsData.sendMethod === 'sms') {
+        alert('⚠️ Huduma ya SMS bado haijaunganishwa. Tafadhali tumia Email kwa sasa.');
       }
       
-      setSendingStatus('sent');
-      setTimeout(() => {
-        setShowModal(false);
-        setSendingStatus('');
-      }, 1500);
-      
+      setSendingStatus('');
     } catch (error) {
       alert('❌ Imeshindwa kutuma. Jaribu tena!');
       setSendingStatus('');
@@ -372,209 +487,203 @@ function App() {
         </div>
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
         <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
+        
+        <div className="toggle-buttons">
+          <button 
+            className={`toggle-btn ${showDashboard ? 'active' : ''}`}
+            onClick={() => setShowDashboard(true)}
+          >
+            <i className="fas fa-chart-line"></i> Dashboard
+          </button>
+          <button 
+            className={`toggle-btn ${!showDashboard ? 'active' : ''}`}
+            onClick={() => setShowDashboard(false)}
+          >
+            <i className="fas fa-users"></i> Wanafunzi
+          </button>
+        </div>
+        
         <button onClick={handleLogout} className="logout-btn">
           <i className="fas fa-sign-out-alt"></i> TONDA MFUMO
         </button>
       </div>
 
-      <div className="dashboard-grid">
-        {/* FORM YA KUSAJILI WANAFUNZI */}
-        <div className="card">
-          <div className="card-header">
-            <i className="fas fa-user-plus"></i>
-            <h2>{editingId ? '📝 HARIRI MWANAFUNZI' : '📝 SAJILI MWANAFUNZI'}</h2>
-            {!canAdd && <span className="permission-badge"><i className="fas fa-lock"></i> Read Only</span>}
-          </div>
-          <div className="card-body">
-            {!canAdd && (
-              <div className="permission-message">
-                <i className="fas fa-info-circle"></i>
-                <p>Samahani, wewe ni user wa kawaida. Huna ruhusa ya kuongeza au kuhariri wanafunzi.</p>
+      {showDashboard ? (
+        <StatisticsDashboard students={students} />
+      ) : (
+        <>
+          <div className="dashboard-grid">
+            {/* FORM YA KUSAJILI WANAFUNZI */}
+            <div className="card">
+              <div className="card-header">
+                <i className="fas fa-user-plus"></i>
+                <h2>{editingId ? '📝 HARIRI MWANAFUNZI' : '📝 SAJILI MWANAFUNZI'}</h2>
+                {!canAdd && <span className="permission-badge"><i className="fas fa-lock"></i> Read Only</span>}
               </div>
-            )}
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>JINA KAMILI *</label>
-                <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Mfano: Mariamu Ramadhani" required disabled={!canAdd} />
-              </div>
-              <div className="form-group">
-                <label>UMRI *</label>
-                <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="22" required disabled={!canAdd} />
-              </div>
-              <div className="form-group">
-                <label>KOZI YA MASOMO *</label>
-                <input type="text" name="course" value={formData.course} onChange={handleChange} placeholder="Information Technology" required disabled={!canAdd} />
-              </div>
-              <div className="form-group">
-                <label>JINSIA *</label>
-                <select name="gender" value={formData.gender} onChange={handleChange} required disabled={!canAdd}>
-                  <option value="">Chagua Jinsia...</option>
-                  <option value="MALE">MALE (Mwanaume)</option>
-                  <option value="FEMALE">FEMALE (Mwanamke)</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Namba ya Simu (Kwa SMS)</label>
-                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="0712345678" disabled={!canAdd} />
-              </div>
-              <div className="form-group">
-                <label>Barua pepe (Email)</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="mwanafunzi@email.com" disabled={!canAdd} />
-              </div>
-              {canAdd && (
-                <button type="submit" className="btn btn-primary">
-                  <i className="fas fa-save"></i> {editingId ? 'SASISHA' : 'HIFADHI'}
-                </button>
-              )}
-              {editingId && canAdd && (
-                <button type="button" className="btn btn-outline" onClick={() => { setEditingId(null); setFormData({ fullName: '', age: '', course: '', gender: '', phone: '', email: '' }); }}>
-                  <i className="fas fa-times"></i> Ghairi
-                </button>
-              )}
-            </form>
-          </div>
-        </div>
-
-        {/* ORODHA YA WANAFUNZI */}
-        <div className="card">
-          <div className="card-header">
-            <i className="fas fa-users"></i>
-            <h2>📋 ORODHA RASMI YA WANAFUNZI</h2>
-          </div>
-          <div className="card-body">
-            <div className="search-section">
-              <input type="text" className="search-input" placeholder="🔍 Tafuta kwa jina au kozi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-              <span className="stat-badge">
-                <i className="fas fa-search"></i> Wanafunzi {filteredStudents.length}
-              </span>
-            </div>
-            
-            {loading && <div className="loading-spinner">Inapakia data...</div>}
-            
-            <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>JINA</th><th>KOZI</th><th>SIMU</th><th>EMAIL</th><th>VITENDO</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredStudents.length === 0 && !loading ? (
-                    <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>📭 Hakuna wanafunzi waliosajiliwa</td></tr>
-                  ) : (
-                    filteredStudents.map(student => (
-                      <tr key={student.id}>
-                        <td><strong>{student.fullName}</strong> ({student.age})<br/><small>{student.gender}</small></td>
-                        <td>{student.course}</td>
-                        <td>{student.phone || '—'}</td>
-                        <td>{student.email || '—'}</td>
-                        <td className="action-buttons">
-                          <button className="btn btn-sm btn-primary" onClick={() => openResultsModal(student)}>
-                            <i className="fas fa-chart-line"></i> Matokeo
-                          </button>
-                          {canEdit && <button className="btn btn-sm btn-outline" onClick={() => handleEdit(student)}><i className="fas fa-edit"></i> Edit</button>}
-                          {canDelete && <button className="btn btn-sm btn-danger" onClick={() => handleDelete(student.id)}><i className="fas fa-trash-alt"></i> Futa</button>}
-                        </td>
-                      </tr>
-                    ))
+              <div className="card-body">
+                {!canAdd && (
+                  <div className="permission-message">
+                    <i className="fas fa-info-circle"></i>
+                    <p>Samahani, wewe ni user wa kawaida. Huna ruhusa ya kuongeza au kuhariri wanafunzi.</p>
+                  </div>
+                )}
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label>JINA KAMILI *</label>
+                    <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Mfano: Mariamu Ramadhani" required disabled={!canAdd} />
+                  </div>
+                  <div className="form-group">
+                    <label>UMRI *</label>
+                    <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="22" required disabled={!canAdd} />
+                  </div>
+                  <div className="form-group">
+                    <label>KOZI YA MASOMO *</label>
+                    <input type="text" name="course" value={formData.course} onChange={handleChange} placeholder="Information Technology" required disabled={!canAdd} />
+                  </div>
+                  <div className="form-group">
+                    <label>JINSIA *</label>
+                    <select name="gender" value={formData.gender} onChange={handleChange} required disabled={!canAdd}>
+                      <option value="">Chagua Jinsia...</option>
+                      <option value="MALE">MALE (Mwanaume)</option>
+                      <option value="FEMALE">FEMALE (Mwanamke)</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Namba ya Simu (Kwa SMS)</label>
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="0712345678" disabled={!canAdd} />
+                  </div>
+                  <div className="form-group">
+                    <label>Barua pepe (Email)</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="mwanafunzi@email.com" disabled={!canAdd} />
+                  </div>
+                  {canAdd && (
+                    <button type="submit" className="btn btn-primary">
+                      <i className="fas fa-save"></i> {editingId ? 'SASISHA' : 'HIFADHI'}
+                    </button>
                   )}
-                </tbody>
-              </table>
+                </form>
+              </div>
             </div>
-            <hr />
-            <div className="download-area">
-              <span><i className="fas fa-download"></i> <strong>PAKUA RIPOTI</strong> (CSV)</span>
-              <button onClick={downloadCSV} className="btn btn-outline btn-sm"><i className="fas fa-file-csv"></i> Pakua Orodha Kamili</button>
+
+            {/* ORODHA YA WANAFUNZI */}
+            <div className="card">
+              <div className="card-header">
+                <i className="fas fa-users"></i>
+                <h2>📋 ORODHA RASMI YA WANAFUNZI</h2>
+              </div>
+              <div className="card-body">
+                <div className="search-section">
+                  <input type="text" className="search-input" placeholder="🔍 Tafuta kwa jina au kozi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                  <span className="stat-badge">
+                    <i className="fas fa-search"></i> Wanafunzi {filteredStudents.length}
+                  </span>
+                </div>
+                
+                {loading && <div className="loading-spinner">Inapakia data...</div>}
+                
+                <div className="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>JINA</th><th>KOZI</th><th>SIMU</th><th>EMAIL</th><th>VITENDO</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredStudents.length === 0 && !loading ? (
+                        <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>📭 Hakuna wanafunzi waliosajiliwa</td></tr>
+                      ) : (
+                        filteredStudents.map(student => (
+                          <tr key={student.id}>
+                            <td><strong>{student.fullName}</strong> ({student.age})<br/><small>{student.gender}</small></td>
+                            <td>{student.course}</td>
+                            <td>{student.phone || '—'}</td>
+                            <td>{student.email || '—'}</td>
+                            <td className="action-buttons">
+                              <button className="btn btn-sm btn-primary" onClick={() => openResultsModal(student)}>
+                                <i className="fas fa-chart-line"></i> Matokeo
+                              </button>
+                              {canEdit && <button className="btn btn-sm btn-outline" onClick={() => handleEdit(student)}><i className="fas fa-edit"></i> Edit</button>}
+                              {canDelete && <button className="btn btn-sm btn-danger" onClick={() => handleDelete(student.id)}><i className="fas fa-trash-alt"></i> Futa</button>}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <hr />
+                <div className="download-area">
+                  <span><i className="fas fa-download"></i> <strong>PAKUA RIPOTI</strong> (CSV)</span>
+                  <button onClick={downloadCSV} className="btn btn-outline btn-sm"><i className="fas fa-file-csv"></i> Pakua Orodha Kamili</button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* MODAL YA KUJAZA MATOKEO NA KUTUMA */}
-      {showModal && selectedStudent && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2><i className="fas fa-chart-line"></i> Jaza Matokeo - {selectedStudent.fullName}</h2>
-              <button className="modal-close" onClick={() => setShowModal(false)}>&times;</button>
-            </div>
-            <div className="modal-body">
-              <div className="results-form">
-                <h3>Somo la 1</h3>
-                <div className="subject-row">
-                  <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} />
-                  <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange}>
-                    <option value="">Daraja</option>
-                    <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                    <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                  </select>
+          {/* MODAL YA KUJAZA MATOKEO */}
+          {showModal && selectedStudent && (
+            <div className="modal-overlay" onClick={() => setShowModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h2><i className="fas fa-chart-line"></i> Jaza Matokeo - {selectedStudent.fullName}</h2>
+                  <button className="modal-close" onClick={() => setShowModal(false)}>&times;</button>
                 </div>
-                
-                <h3>Somo la 2</h3>
-                <div className="subject-row">
-                  <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} />
-                  <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange}>
-                    <option value="">Daraja</option>
-                    <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                    <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                  </select>
-                </div>
-                
-                <h3>Somo la 3</h3>
-                <div className="subject-row">
-                  <input type="text" name="subject3" placeholder="Jina la somo" value={resultsData.subject3} onChange={handleResultsChange} />
-                  <select name="grade3" value={resultsData.grade3} onChange={handleResultsChange}>
-                    <option value="">Daraja</option>
-                    <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                    <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                  </select>
-                </div>
-                
-                <h3>Somo la 4</h3>
-                <div className="subject-row">
-                  <input type="text" name="subject4" placeholder="Jina la somo" value={resultsData.subject4} onChange={handleResultsChange} />
-                  <select name="grade4" value={resultsData.grade4} onChange={handleResultsChange}>
-                    <option value="">Daraja</option>
-                    <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                    <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                  </select>
-                </div>
-                
-                <div className="form-group">
-                  <label>MAONI / REMARKS</label>
-                  <textarea name="remarks" rows="3" placeholder="Maoni kuhusu mwanafunzi..." value={resultsData.remarks} onChange={handleResultsChange}></textarea>
-                </div>
-                
-                <div className="form-group">
-                  <label>NJIA YA KUTUMA</label>
-                  <div className="send-methods">
-                    <label className="send-option">
-                      <input type="radio" name="sendMethod" value="email" onChange={handleResultsChange} />
-                      <i className="fas fa-envelope"></i> Tuma kwa Email ({selectedStudent.email || 'Hakuna email'})
-                    </label>
-                    <label className="send-option">
-                      <input type="radio" name="sendMethod" value="sms" onChange={handleResultsChange} />
-                      <i className="fas fa-sms"></i> Tuma kwa SMS ({selectedStudent.phone || 'Hakuna namba'})
-                    </label>
+                <div className="modal-body">
+                  <div className="results-form">
+                    <h3>Somo la 1</h3>
+                    <div className="subject-row">
+                      <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} />
+                      <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange}>
+                        <option value="">Daraja</option>
+                        <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
+                        <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
+                      </select>
+                    </div>
+                    
+                    <h3>Somo la 2</h3>
+                    <div className="subject-row">
+                      <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} />
+                      <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange}>
+                        <option value="">Daraja</option>
+                        <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
+                        <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
+                      </select>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label>MAONI / REMARKS</label>
+                      <textarea name="remarks" rows="3" placeholder="Maoni kuhusu mwanafunzi..." value={resultsData.remarks} onChange={handleResultsChange}></textarea>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label>NJIA YA KUTUMA</label>
+                      <div className="send-methods">
+                        <label className="send-option">
+                          <input type="radio" name="sendMethod" value="email" onChange={handleResultsChange} />
+                          <i className="fas fa-envelope"></i> Tuma kwa Email ({selectedStudent.email || 'Hakuna email'})
+                        </label>
+                        <label className="send-option">
+                          <input type="radio" name="sendMethod" value="sms" onChange={handleResultsChange} />
+                          <i className="fas fa-sms"></i> Tuma kwa SMS ({selectedStudent.phone || 'Hakuna namba'})
+                        </label>
+                      </div>
+                    </div>
+                    
+                    {sendingStatus === 'processing' && (
+                      <div className="sending-status"><i className="fas fa-spinner fa-spin"></i> Inatuma...</div>
+                    )}
                   </div>
                 </div>
-                
-                {sendingStatus === 'processing' && (
-                  <div className="sending-status"><i className="fas fa-spinner fa-spin"></i> Inatuma...</div>
-                )}
-                {sendingStatus === 'sent' && (
-                  <div className="sent-status"><i className="fas fa-check-circle"></i> Imetumwa kikamilifu!</div>
-                )}
+                <div className="modal-footer">
+                  <button className="btn btn-outline" onClick={() => setShowModal(false)}>Funga</button>
+                  <button className="btn btn-primary" onClick={handleSendResults} disabled={sendingStatus === 'processing'}>
+                    <i className="fas fa-paper-plane"></i> Tuma Matokeo
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="modal-footer">
-              <button className="btn btn-outline" onClick={() => setShowModal(false)}>Funga</button>
-              <button className="btn btn-primary" onClick={handleSendResults} disabled={sendingStatus === 'processing'}>
-                <i className="fas fa-paper-plane"></i> Tuma Matokeo
-              </button>
-            </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );
