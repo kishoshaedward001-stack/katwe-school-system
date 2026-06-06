@@ -134,9 +134,6 @@ const StatisticsDashboard = ({ students }) => {
     </div>
   );
 };
-
-// ============ PARENT DASHBOARD COMPONENT ============
-// ============ PARENT DASHBOARD COMPONENT ============
 const ParentDashboard = ({ parentData, onLogout }) => {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -145,14 +142,21 @@ const ParentDashboard = ({ parentData, onLogout }) => {
   useEffect(() => {
     const fetchStudent = async () => {
       try {
+        console.log('ParentData:', parentData); // Angalia hii kwenye console
+        
         const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
-        const response = await fetch(`${API_URL}/parents/${parentData.parentcode}/student`);
+        const url = `${API_URL}/parents/${parentData.parentcode}/student`;
+        console.log('Fetching URL:', url); // Angalia URL
+        
+        const response = await fetch(url);
+        console.log('Response status:', response.status);
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
         
         const data = await response.json();
+        console.log('Response data:', data);
         
         if (data.success) {
           setStudent(data.student);
@@ -169,6 +173,10 @@ const ParentDashboard = ({ parentData, onLogout }) => {
     
     if (parentData && parentData.parentcode) {
       fetchStudent();
+    } else {
+      console.error('No parentcode found!', parentData);
+      setLoading(false);
+      setError('Parent code not found');
     }
   }, [parentData]);
 
@@ -182,6 +190,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="loading-container">
           <i className="fas fa-spinner fa-spin"></i>
           <p>Inapakia taarifa za mwanafunzi...</p>
+          <p style={{fontSize: '12px', marginTop: '10px'}}>Tafadhali subiri...</p>
         </div>
       </div>
     );
@@ -193,13 +202,11 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="school-header">
           <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
           <p>Parent Portal</p>
-          <button onClick={onLogout} className="logout-btn">
-            <i className="fas fa-sign-out-alt"></i> TOKA
-          </button>
+          <button onClick={onLogout} className="logout-btn">TONDA</button>
         </div>
         <div className="error-container">
           <i className="fas fa-exclamation-triangle"></i>
-          <p>Kuna tatizo: {error}</p>
+          <p>Error: {error}</p>
           <button onClick={onLogout} className="btn btn-primary">Jaribu tena</button>
         </div>
       </div>
@@ -212,9 +219,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="school-header">
           <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
           <p>Parent Portal</p>
-          <button onClick={onLogout} className="logout-btn">
-            <i className="fas fa-sign-out-alt"></i> TOKA
-          </button>
+          <button onClick={onLogout} className="logout-btn">TONDA</button>
         </div>
         <div className="error-container">
           <p>Hakuna taarifa za mwanafunzi</p>
@@ -228,9 +233,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
       <div className="school-header">
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
         <p>Parent Portal - Karibu {parentData.parentname}</p>
-        <button onClick={onLogout} className="logout-btn">
-          <i className="fas fa-sign-out-alt"></i> TOKA MFUMO
-        </button>
+        <button onClick={onLogout} className="logout-btn">TONDA MFUMO</button>
       </div>
 
       <div className="parent-dashboard">
@@ -256,6 +259,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
     </div>
   );
 };
+
 // ============ MAIN APP COMPONENT ============
 function App() {
   // ============ STATE ZA LOGIN ============
