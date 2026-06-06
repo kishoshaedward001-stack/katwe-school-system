@@ -352,61 +352,58 @@ function App() {
     setShowModal(true);
   };
 
-  const handleResultsChange = (e) => {
-    setResultsData({ ...resultsData, [e.target.name]: e.target.value });
-  };
-
-  const sendEmail = async (student, results) => {
-    try {
-      const response = await fetch(`${API_URL}/send-results`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student, results })
-      });
-      return response.ok;
-    } catch (error) {
-      console.error('Email error:', error);
-      return false;
-    }
-  };
-
   const handleSendResults = async () => {
+    // Check if at least one subject is filled
     if (!resultsData.subject1 || !resultsData.grade1) {
-      alert('Tafadhali jaza angalau somo moja na daraja lake!');
-      return;
+        alert('Tafadhali jaza angalau somo moja na daraja lake!');
+        return;
     }
     
+    // Check if sending method is selected
     if (!resultsData.sendMethod) {
-      alert('Chagua njia ya kutuma (Email au SMS)!');
-      return;
+        alert('Chagua njia ya kutuma (Email au SMS)!');
+        return;
     }
 
     setSendingStatus('processing');
     
     try {
-      if (resultsData.sendMethod === 'email') {
-        if (!selectedStudent.email) {
-          alert('Mwanafunzi hana anuani ya email!');
-          setSendingStatus('');
-          return;
+        if (resultsData.sendMethod === 'email') {
+            // Check if student has email
+            if (!selectedStudent.email) {
+                alert('Mwanafunzi hana anuani ya email!');
+                setSendingStatus('');
+                return;
+            }
+            
+            // Send to backend API
+            const response = await fetch(`${API_URL}/send-results`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    student: selectedStudent,
+                    results: resultsData
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert(`✅ Matokeo yametumwa kwa email ya ${selectedStudent.email}`);
+                setShowModal(false); // Close modal
+            } else {
+                alert('❌ Imeshindwa kutuma email. Jaribu tena!');
+            }
+        } else if (resultsData.sendMethod === 'sms') {
+            alert('⚠️ Huduma ya SMS bado haijaunganishwa. Tafadhali tumia Email kwa sasa.');
         }
-        const success = await sendEmail(selectedStudent, resultsData);
-        if (success) {
-          alert(`✅ Matokeo yametumwa kwa email ya ${selectedStudent.email}`);
-          setShowModal(false);
-        } else {
-          alert('❌ Imeshindwa kutuma email. Jaribu tena!');
-        }
-      } else if (resultsData.sendMethod === 'sms') {
-        alert('⚠️ Huduma ya SMS bado haijaunganishwa. Tafadhali tumia Email kwa sasa.');
-      }
-      
-      setSendingStatus('');
     } catch (error) {
-      alert('❌ Imeshindwa kutuma. Jaribu tena!');
-      setSendingStatus('');
+        console.error('Send error:', error);
+        alert('❌ Kuna tatizo la network. Hakikisha backend iko running!');
+    } finally {
+        setSendingStatus('');
     }
-  };
+};
 
   // ============ FILTER STUDENTS ============
   const filteredStudents = students.filter(s =>
