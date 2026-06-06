@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import Timetable from './components/Timetable';
+import TimetableAdmin from './components/TimetableAdmin';
+import UserManagement from './components/UserManagement';
 
 // ============ DASHBOARD COMPONENT ============
 const StatisticsDashboard = ({ students }) => {
@@ -123,7 +125,7 @@ const StatisticsDashboard = ({ students }) => {
               </span>
               <span className="recent-badge">{student.gender}</span>
             </div>
-          ))};
+          ))}
           {recentStudents.length === 0 && (
             <div className="no-data">
               <i className="fas fa-folder-open"></i>
@@ -286,6 +288,19 @@ function App() {
   const [selectedRole, setSelectedRole] = useState(null);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [showParentLogin, setShowParentLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+
+  // ============ REGISTRATION STATE ============
+  const [registerData, setRegisterData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fullName: '',
+    phone: ''
+  });
+  const [registerError, setRegisterError] = useState('');
+  const [registerSuccess, setRegisterSuccess] = useState(false);
 
   // ============ PARENT STATE ============
   const [isParentLoggedIn, setIsParentLoggedIn] = useState(false);
@@ -298,6 +313,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showDashboard, setShowDashboard] = useState(true);
   const [showTimetable, setShowTimetable] = useState(false);
+  const [showTimetableAdmin, setShowTimetableAdmin] = useState(false);
+  const [showUserManagement, setShowUserManagement] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [formData, setFormData] = useState({ 
     fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: ''
@@ -321,7 +338,7 @@ function App() {
   // ============ API BASE URL ============
   const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
 
-  // ============ USER CREDENTIALS ============
+  // ============ USER CREDENTIALS (for admin only) ============
   const users = {
     admin: [{ username: 'admin', password: 'admin123', role: 'admin', name: 'Admin Mkuu' }],
     regular: [{ username: 'teacher', password: 'teacher123', role: 'user', name: 'Mwalimu Juma' }]
@@ -404,6 +421,8 @@ function App() {
     setStudents([]);
     setShowDashboard(true);
     setShowTimetable(false);
+    setShowTimetableAdmin(false);
+    setShowUserManagement(false);
   };
 
   // ============ PHOTO UPLOAD ============
@@ -669,6 +688,92 @@ function App() {
     link.click();
   };
 
+  // ============ REGISTRATION PAGE ============
+  if (showRegister) {
+    return (
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-header">
+            <i className="fas fa-user-plus"></i>
+            <h1>KATWE SECONDARY SCHOOL</h1>
+            <p>Jisajili kwa akaunti yako</p>
+          </div>
+          
+          {registerSuccess ? (
+            <div className="success-message">
+              <i className="fas fa-check-circle"></i>
+              <h3>Registration Successful!</h3>
+              <p>Your account has been created. Please wait for admin approval.</p>
+              <p>You will receive an email once your account is approved.</p>
+              <button onClick={() => {
+                setShowRegister(false);
+                setRegisterSuccess(false);
+              }} className="btn btn-primary">Go to Login</button>
+            </div>
+          ) : (
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              if (registerData.password !== registerData.confirmPassword) {
+                setRegisterError('Passwords do not match!');
+                return;
+              }
+              try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    username: registerData.username,
+                    email: registerData.email,
+                    password: registerData.password,
+                    fullName: registerData.fullName,
+                    phone: registerData.phone
+                  })
+                });
+                const data = await response.json();
+                if (data.success) {
+                  setRegisterSuccess(true);
+                  setRegisterError('');
+                } else {
+                  setRegisterError(data.error);
+                }
+              } catch (error) {
+                setRegisterError('Registration failed. Please try again.');
+              }
+            }}>
+              <div className="form-group">
+                <label><i className="fas fa-user"></i> Username *</label>
+                <input type="text" value={registerData.username} onChange={(e) => setRegisterData({...registerData, username: e.target.value})} required />
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-envelope"></i> Email *</label>
+                <input type="email" value={registerData.email} onChange={(e) => setRegisterData({...registerData, email: e.target.value})} required />
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-lock"></i> Password *</label>
+                <input type="password" value={registerData.password} onChange={(e) => setRegisterData({...registerData, password: e.target.value})} required />
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-lock"></i> Confirm Password *</label>
+                <input type="password" value={registerData.confirmPassword} onChange={(e) => setRegisterData({...registerData, confirmPassword: e.target.value})} required />
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-id-card"></i> Full Name</label>
+                <input type="text" value={registerData.fullName} onChange={(e) => setRegisterData({...registerData, fullName: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-phone"></i> Phone Number</label>
+                <input type="tel" value={registerData.phone} onChange={(e) => setRegisterData({...registerData, phone: e.target.value})} />
+              </div>
+              {registerError && <div className="error-message">{registerError}</div>}
+              <button type="submit" className="btn-login">Register</button>
+              <button type="button" onClick={() => setShowRegister(false)} className="btn-outline" style={{marginTop: '10px'}}>Back to Login</button>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // ============ PARENT LOGIN PAGE ============
   if (showParentLogin && !isParentLoggedIn) {
     return (
@@ -701,13 +806,7 @@ function App() {
           }}>
             <div className="form-group">
               <label><i className="fas fa-key"></i> Parent Code</label>
-              <input 
-                type="text" 
-                value={parentCode}
-                onChange={(e) => setParentCode(e.target.value)}
-                placeholder="Weka code yako (kwa mfano: 123456)"
-                required
-              />
+              <input type="text" value={parentCode} onChange={(e) => setParentCode(e.target.value)} placeholder="Weka code yako (kwa mfano: 123456)" required />
             </div>
             {parentLoginError && <div className="error-message">{parentLoginError}</div>}
             <button type="submit" className="btn-login">INGIA</button>
@@ -757,6 +856,9 @@ function App() {
                   <i className="fas fa-users"></i>
                   <div><strong>Mzazi / Guardian</strong><small>Angalia matokeo ya mtoto wako</small></div>
                 </button>
+              </div>
+              <div className="register-link">
+                <p>Don't have an account? <button onClick={() => setShowRegister(true)} className="link-btn">Register here</button></p>
               </div>
             </div>
           ) : (
@@ -820,21 +922,41 @@ function App() {
         <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
         
         <div className="toggle-buttons">
-          <button className={`toggle-btn ${showDashboard && !showTimetable ? 'active' : ''}`} onClick={() => { setShowDashboard(true); setShowTimetable(false); }}>
+          <button className={`toggle-btn ${showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement ? 'active' : ''}`} 
+            onClick={() => { setShowDashboard(true); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); }}>
             <i className="fas fa-chart-line"></i> Dashboard
           </button>
-          <button className={`toggle-btn ${!showDashboard && !showTimetable ? 'active' : ''}`} onClick={() => { setShowDashboard(false); setShowTimetable(false); }}>
+          <button className={`toggle-btn ${!showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement ? 'active' : ''}`} 
+            onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); }}>
             <i className="fas fa-users"></i> Wanafunzi
           </button>
-          <button className={`toggle-btn ${showTimetable ? 'active' : ''}`} onClick={() => { setShowDashboard(false); setShowTimetable(true); }}>
+          <button className={`toggle-btn ${showTimetable ? 'active' : ''}`} 
+            onClick={() => { setShowDashboard(false); setShowTimetable(true); setShowTimetableAdmin(false); setShowUserManagement(false); }}>
             <i className="fas fa-calendar-alt"></i> Timetable
           </button>
+          
+          {userRole === 'admin' && (
+            <>
+              <button className={`toggle-btn ${showTimetableAdmin ? 'active' : ''}`} 
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(true); setShowUserManagement(false); }}>
+                <i className="fas fa-cog"></i> Timetable Admin
+              </button>
+              <button className={`toggle-btn ${showUserManagement ? 'active' : ''}`} 
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(true); }}>
+                <i className="fas fa-users-cog"></i> User Management
+              </button>
+            </>
+          )}
         </div>
         
         <button onClick={handleLogout} className="logout-btn">TONDA MFUMO</button>
       </div>
 
-      {showTimetable ? (
+      {showUserManagement ? (
+        <UserManagement />
+      ) : showTimetableAdmin ? (
+        <TimetableAdmin />
+      ) : showTimetable ? (
         <Timetable />
       ) : showDashboard ? (
         <StatisticsDashboard students={students} />
@@ -1019,7 +1141,7 @@ function App() {
                         </label>
                         <label className="send-option">
                           <input type="radio" name="sendMethod" value="sms" onChange={handleResultsChange} />
-                          <i className="fas fa-comment"></i> Tuma kwa SMS ({selectedStudent.phone || 'Hakuna namba'})
+                          <i className="fas fa-sms"></i> Tuma kwa SMS ({selectedStudent.phone || 'Hakuna namba'})
                         </label>
                       </div>
                     </div>
@@ -1039,8 +1161,9 @@ function App() {
             </div>
           )}
         </>
-      )};
-     </div>
+      )}
+    </div>
   );
 }
+
 export default App;
