@@ -351,6 +351,10 @@ function App() {
     setSendingStatus('');
     setShowModal(true);
   };
+  // ============ HANDLE RESULTS CHANGE ============
+const handleResultsChange = (e) => {
+    setResultsData({ ...resultsData, [e.target.name]: e.target.value });
+};
 
   const handleSendResults = async () => {
     // Check if at least one subject is filled
