@@ -620,61 +620,65 @@ function App() {
   };
 
   // ============ PARENT LOGIN PAGE ============
-  if (showParentLogin && !isParentLoggedIn) {
+  // Parent Login Page
+if (showParentLogin && !isParentLoggedIn) {
     return (
-      <div className="login-container">
-        <div className="login-card">
-          <div className="login-header">
-            <i className="fas fa-users"></i>
-            <h1>KATWE SECONDARY SCHOOL</h1>
-            <p>Parent Portal - Ingiza Code Yako</p>
-          </div>
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            try {
-              const response = await fetch(`${API_URL}/parents/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ parentCode })
-              });
-              const data = await response.json();
-              if (data.success) {
-                setIsParentLoggedIn(true);
-                setParentData(data.parent);
-                setParentLoginError('');
-              } else {
-                setParentLoginError('Code si sahihi! Jaribu tena.');
-              }
-            } catch (error) {
-              setParentLoginError('Kuna tatizo, jaribu tena!');
-            }
-          }}>
-            <div className="form-group">
-              <label><i className="fas fa-key"></i> Parent Code</label>
-              <input 
-                type="text" 
-                value={parentCode}
-                onChange={(e) => setParentCode(e.target.value)}
-                placeholder="Weka code yako (kwa mfano: 123456)"
-                required
-              />
+        <div className="login-container">
+            <div className="login-card">
+                <div className="login-header">
+                    <i className="fas fa-users"></i>
+                    <h1>KATWE SECONDARY SCHOOL</h1>
+                    <p>Parent Portal - Ingiza Code Yako</p>
+                </div>
+                <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    try {
+                        console.log('Sending code:', parentCode); // ONGEZA HII
+                        const response = await fetch(`${API_URL}/parents/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ parentCode })
+                        });
+                        const data = await response.json();
+                        console.log('Response data:', data); // ONGEZA HII
+                        if (data.success) {
+                            console.log('Parent data:', data.parent); // ONGEZA HII
+                            setIsParentLoggedIn(true);
+                            setParentData(data.parent);
+                            setParentLoginError('');
+                        } else {
+                            setParentLoginError('Code si sahihi! Jaribu tena.');
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        setParentLoginError('Kuna tatizo, jaribu tena!');
+                    }
+                }}>
+                    <div className="form-group">
+                        <label><i className="fas fa-key"></i> Parent Code</label>
+                        <input 
+                            type="text" 
+                            value={parentCode}
+                            onChange={(e) => setParentCode(e.target.value)}
+                            placeholder="Weka code yako (kwa mfano: 123456)"
+                            required
+                        />
+                    </div>
+                    {parentLoginError && <div className="error-message">{parentLoginError}</div>}
+                    <button type="submit" className="btn-login">
+                        <i className="fas fa-sign-in-alt"></i> INGIA
+                    </button>
+                </form>
+                <div className="login-footer">
+                    <p>Huna code? Wasiliana na shule kwa msaada.</p>
+                    <button onClick={() => setShowParentLogin(false)} className="btn-outline">
+                        <i className="fas fa-arrow-left"></i> Rudi kwa Login ya Shule
+                    </button>
+                </div>
             </div>
-            {parentLoginError && <div className="error-message">{parentLoginError}</div>}
-            <button type="submit" className="btn-login">
-              <i className="fas fa-sign-in-alt"></i> INGIA
-            </button>
-          </form>
-          <div className="login-footer">
-            <p>Huna code? Wasiliana na shule kwa msaada.</p>
-            <button onClick={() => setShowParentLogin(false)} className="btn-outline">
-              <i className="fas fa-arrow-left"></i> Rudi kwa Login ya Shule
-            </button>
-          </div>
         </div>
-      </div>
     );
-  }
-
+}
   // ============ PARENT DASHBOARD ============
   if (isParentLoggedIn && parentData) {
     return <ParentDashboard parentData={parentData} onLogout={() => {
