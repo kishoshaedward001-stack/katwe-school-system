@@ -1623,3 +1623,20 @@ textarea:focus {
     gap: 1rem;
   }
 }
+.scrolling-text span:nth-child(8) {
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  color: #1a1a2e;
+  text-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+
+.scrolling-text span:nth-child(9) {
+  background: linear-gradient(45deg, #20b2aa, #48d1cc);
+  color: white;
+  text-shadow: 0 0 10px rgba(32,178,170,0.5);
+}
+
+.scrolling-text span:nth-child(10) {
+  background: linear-gradient(45deg, #ff69b4, #ffb6c1);
+  color: white;
+  text-shadow: 0 0 10px rgba(255,105,180,0.5);
+}

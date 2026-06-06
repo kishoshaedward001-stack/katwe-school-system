@@ -502,15 +502,17 @@ function App() {
   {/* Scrolling Text Banner */}
   <div className="scrolling-banner">
     <div className="scrolling-text">
-      <span className="color-word">🔥 HELLO! 🔥</span>
-      <span className="color-word">✨ WELCOME TO KATWE SECONDARY SCHOOL ✨</span>
-      <span className="color-word">📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚</span>
-      <span className="color-word">🎓 ENJOY OUR WEBSITE! 🎓</span>
-      <span className="color-word">💪 KARIBU SANA! 💪</span>
-      <span className="color-word">📊 MODAL YA MATOKEO 📊</span>
-      <span className="color-word">🎯 BEST STUDENT MANAGEMENT SYSTEM 🎯</span>
-    </div>
-  </div>
+  <span className="color-word">🔥 HELLO! 🔥</span>
+  <span className="color-word">✨ WELCOME TO KATWE SECONDARY SCHOOL ✨</span>
+  <span className="color-word">📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚</span>
+  <span className="color-word">🎓 ENJOY OUR WEBSITE! 🎓</span>
+  <span className="color-word">💪 KARIBU SANA! 💪</span>
+  <span className="color-word">📊 MODAL YA MATOKEO 📊</span>
+  <span className="color-word">🎯 BEST STUDENT MANAGEMENT SYSTEM 🎯</span>
+  <span className="color-word">⭐ RATE US 5 STARS! ⭐</span>
+  <span className="color-word">📞 CALL US: +255 XXX XXX 📞</span>
+  <span className="color-word">✉️ EMAIL: info@katwe.edu ✉️</span>
+</div>
   
   {/* Rest of your header content */}
   <div className="user-info">
@@ -548,6 +550,7 @@ function App() {
           <i className="fas fa-sign-out-alt"></i> TOKA MFUMO
         </button>
       </div>
+    </div>
 
       {showDashboard ? (
         <StatisticsDashboard students={students} />
