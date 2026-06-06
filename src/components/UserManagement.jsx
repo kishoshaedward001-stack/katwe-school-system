@@ -80,7 +80,7 @@ const UserManagement = () => {
                         ) : (
                           <span className="pending-badge">⏳ Pending</span>
                         )}
-                       </td>
+                      </td>
                       <td>
                         {!user.isapproved && (
                           <button onClick={() => approveUser(user.id)} className="btn btn-sm btn-success">
