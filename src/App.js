@@ -23,30 +23,35 @@ const StatisticsDashboard = ({ students }) => {
   
   return (
     <div className="dashboard-stats">
+      <div className="dashboard-header">
+        <h2><i className="fas fa-chart-pie"></i> Dashboard ya Takwiri</h2>
+        <p>Muhtasari wa takwiri za wanafunzi wote</p>
+      </div>
+      
       <div className="stats-grid">
         <div className="stat-card blue">
-          <i className="fas fa-users"></i>
+          <div className="stat-icon"><i className="fas fa-users"></i></div>
           <div className="stat-info">
             <h3>{totalStudents}</h3>
             <p>Jumla ya Wanafunzi</p>
           </div>
         </div>
         <div className="stat-card green">
-          <i className="fas fa-venus"></i>
+          <div className="stat-icon"><i className="fas fa-female"></i></div>
           <div className="stat-info">
             <h3>{femaleCount}</h3>
             <p>Wanawake</p>
           </div>
         </div>
         <div className="stat-card orange">
-          <i className="fas fa-mars"></i>
+          <div className="stat-icon"><i className="fas fa-male"></i></div>
           <div className="stat-info">
             <h3>{maleCount}</h3>
             <p>Wanaume</p>
           </div>
         </div>
         <div className="stat-card purple">
-          <i className="fas fa-book"></i>
+          <div className="stat-icon"><i className="fas fa-book"></i></div>
           <div className="stat-info">
             <h3>{Object.keys(courseStats).length}</h3>
             <p>Kozi Zilizopo</p>
@@ -56,19 +61,19 @@ const StatisticsDashboard = ({ students }) => {
       
       <div className="charts-row">
         <div className="chart-card">
-          <h4><i className="fas fa-chart-pie"></i> Wanafunzi kwa Jinsia</h4>
+          <h4><i className="fas fa-venus-mars"></i> Wanafunzi kwa Jinsia</h4>
           <div className="gender-chart">
             <div className="gender-bar male" style={{ width: `${(maleCount/totalStudents)*100}%` }}>
-              {maleCount} Wanaume
+              <span>{maleCount} Wanaume ({Math.round((maleCount/totalStudents)*100)}%)</span>
             </div>
             <div className="gender-bar female" style={{ width: `${(femaleCount/totalStudents)*100}%` }}>
-              {femaleCount} Wanawake
+              <span>{femaleCount} Wanawake ({Math.round((femaleCount/totalStudents)*100)}%)</span>
             </div>
           </div>
         </div>
         
         <div className="chart-card">
-          <h4><i className="fas fa-chart-line"></i> Umri wa Wanafunzi</h4>
+          <h4><i className="fas fa-calendar-alt"></i> Umri wa Wanafunzi</h4>
           <div className="age-stats">
             {Object.entries(ageGroups).map(([group, count]) => (
               <div key={group} className="age-item">
@@ -111,12 +116,80 @@ const StatisticsDashboard = ({ students }) => {
               ) : (
                 <i className="fas fa-user-graduate"></i>
               )}
-              <span><strong>{student.fullName}</strong> - {student.course}</span>
-              <small>{student.gender === 'MALE' ? '👨' : '👩'}</small>
+              <span>
+                <strong>{student.fullName}</strong>
+                <small>{student.course}</small>
+              </span>
+              <span className="recent-badge">{student.gender}</span>
             </div>
           ))}
           {recentStudents.length === 0 && (
-            <div className="no-data">Hakuna wanafunzi waliopo</div>
+            <div className="no-data">
+              <i className="fas fa-folder-open"></i>
+              <p>Hakuna wanafunzi waliopo</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============ PARENT DASHBOARD COMPONENT ============
+const ParentDashboard = ({ parentData, onLogout }) => {
+  const [results, setResults] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchResults();
+  }, []);
+
+  const fetchResults = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api'}/parents/${parentData.parentcode}/results`);
+      const data = await response.json();
+      if (data.success) {
+        setResults(data.student);
+      }
+    } catch (error) {
+      console.error('Error fetching results:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container">
+      <div className="school-header">
+        <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
+        <p>Parent Portal - Karibu {parentData.parentname}</p>
+        <button onClick={onLogout} className="logout-btn">
+          <i className="fas fa-sign-out-alt"></i> TONDA MFUMO
+        </button>
+      </div>
+
+      <div className="parent-dashboard">
+        <div className="student-info-card">
+          {results?.photo && <img src={results.photo} alt="Student" className="student-photo-large" />}
+          <h2>{results?.fullName || 'Loading...'}</h2>
+          <p><strong>📚 Kozi:</strong> {results?.course}</p>
+          <p><strong>🎂 Umri:</strong> {results?.age} years</p>
+          <p><strong>👤 Jinsia:</strong> {results?.gender}</p>
+          <p><strong>📞 Simu:</strong> {results?.phone || 'Hajajazwa'}</p>
+          <p><strong>📧 Email:</strong> {results?.email || 'Hajajazwa'}</p>
+        </div>
+        
+        <div className="results-card">
+          <h3><i className="fas fa-chart-line"></i> Matokeo ya Mitihani</h3>
+          {loading ? (
+            <p>Inapakia...</p>
+          ) : (
+            <div className="results-placeholder">
+              <i className="fas fa-file-alt"></i>
+              <p>Matokeo yataonekana hapa baada ya kuchapishwa na mwalimu.</p>
+              <small>Taarifa za matokeo zitawasiliana nawe kupitia email au SMS.</small>
+            </div>
           )}
         </div>
       </div>
@@ -133,6 +206,13 @@ function App() {
   const [loginError, setLoginError] = useState('');
   const [selectedRole, setSelectedRole] = useState(null);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [showParentLogin, setShowParentLogin] = useState(false);
+
+  // ============ PARENT STATE ============
+  const [isParentLoggedIn, setIsParentLoggedIn] = useState(false);
+  const [parentCode, setParentCode] = useState('');
+  const [parentData, setParentData] = useState(null);
+  const [parentLoginError, setParentLoginError] = useState('');
 
   // ============ STATE ZA WANAFUNZI ============
   const [students, setStudents] = useState([]);
@@ -337,6 +417,37 @@ function App() {
     }
   };
 
+  // ============ PARENT CODE GENERATION ============
+  const generateParentCode = async (student) => {
+    const parentName = prompt('Jina la mzazi:');
+    if (!parentName) return;
+    
+    const phone = prompt('Namba ya simu ya mzazi:');
+    const email = prompt('Barua pepe ya mzazi:');
+    
+    try {
+      const response = await fetch(`${API_URL}/parents/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: student.id,
+          parentName,
+          phone,
+          email
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert(`✅ Code ya mzazi: ${data.parentCode}\n\nWape mzazi code hii kuingia kwenye Parent Portal.\n\nWaambie waingie kwenye website yetu na kuchagua "Parent Login".`);
+      } else {
+        alert('❌ Imeshindwa kuunda code. Jaribu tena!');
+      }
+    } catch (error) {
+      console.error('Error generating parent code:', error);
+      alert('❌ Kuna tatizo, jaribu tena!');
+    }
+  };
+
   // ============ MATOKEO MODAL ============
   const openResultsModal = (student) => {
     setSelectedStudent(student);
@@ -351,88 +462,83 @@ function App() {
     setSendingStatus('');
     setShowModal(true);
   };
-  // ============ HANDLE RESULTS CHANGE ============
-const handleResultsChange = (e) => {
+
+  const handleResultsChange = (e) => {
     setResultsData({ ...resultsData, [e.target.name]: e.target.value });
-};
+  };
 
   const handleSendResults = async () => {
-    // Check if at least one subject is filled
     if (!resultsData.subject1 || !resultsData.grade1) {
-        alert('Tafadhali jaza angalau somo moja na daraja lake!');
-        return;
+      alert('Tafadhali jaza angalau somo moja na daraja lake!');
+      return;
     }
-
-    // Check if sending method is selected
+    
     if (!resultsData.sendMethod) {
-        alert('Chagua njia ya kutuma (Email au SMS)!');
-        return;
+      alert('Chagua njia ya kutuma (Email au SMS)!');
+      return;
     }
 
     setSendingStatus('processing');
     
     try {
-        if (resultsData.sendMethod === 'email') {
-            // Check if student has email
-            if (!selectedStudent.email) {
-                alert('Mwanafunzi hana anuani ya email!');
-                setSendingStatus('');
-                return;
-            }
-            
-            // Send email via backend
-            const response = await fetch(`${API_URL}/send-results`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    student: selectedStudent,
-                    results: resultsData
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                alert(`✅ Matokeo yametumwa kwa email ya ${selectedStudent.email}`);
-                setShowModal(false);
-            } else {
-                alert('❌ Imeshindwa kutuma email. Jaribu tena!');
-            }
-        } 
-        else if (resultsData.sendMethod === 'sms') {
-            // Check if student has phone number
-            if (!selectedStudent.phone) {
-                alert('Mwanafunzi hana namba ya simu!');
-                setSendingStatus('');
-                return;
-            }
-            
-            // Send SMS via backend
-            const response = await fetch(`${API_URL}/send-sms`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    student: selectedStudent,
-                    results: resultsData
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                alert(`✅ Matokeo yametumwa kwa SMS kwa namba ${selectedStudent.phone}`);
-                setShowModal(false);
-            } else {
-                alert('❌ Imeshindwa kutuma SMS. Jaribu tena!');
-            }
+      if (resultsData.sendMethod === 'email') {
+        if (!selectedStudent.email) {
+          alert('Mwanafunzi hana anuani ya email!');
+          setSendingStatus('');
+          return;
         }
+        
+        const response = await fetch(`${API_URL}/send-results`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student: selectedStudent,
+            results: resultsData
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(`✅ Matokeo yametumwa kwa email ya ${selectedStudent.email}`);
+          setShowModal(false);
+        } else {
+          alert('❌ Imeshindwa kutuma email. Jaribu tena!');
+        }
+      } 
+      else if (resultsData.sendMethod === 'sms') {
+        if (!selectedStudent.phone) {
+          alert('Mwanafunzi hana namba ya simu!');
+          setSendingStatus('');
+          return;
+        }
+        
+        const response = await fetch(`${API_URL}/send-sms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student: selectedStudent,
+            results: resultsData
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(`✅ Matokeo yametumwa kwa SMS kwa namba ${selectedStudent.phone}`);
+          setShowModal(false);
+        } else {
+          alert('❌ Imeshindwa kutuma SMS. Jaribu tena!');
+        }
+      }
     } catch (error) {
-        console.error('Send error:', error);
-        alert('❌ Kuna tatizo la network. Hakikisha backend iko running!');
+      console.error('Send error:', error);
+      alert('❌ Kuna tatizo la network. Hakikisha backend iko running!');
     } finally {
-        setSendingStatus('');
+      setSendingStatus('');
     }
-};
+  };
+
   // ============ FILTER STUDENTS ============
   const filteredStudents = students.filter(s =>
     s.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -449,6 +555,71 @@ const handleResultsChange = (e) => {
     link.download = "wanafunzi_katwe_report.csv";
     link.click();
   };
+
+  // ============ PARENT LOGIN PAGE ============
+  if (showParentLogin && !isParentLoggedIn) {
+    return (
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-header">
+            <i className="fas fa-users"></i>
+            <h1>KATWE SECONDARY SCHOOL</h1>
+            <p>Parent Portal - Ingiza Code Yako</p>
+          </div>
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            try {
+              const response = await fetch(`${API_URL}/parents/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ parentCode })
+              });
+              const data = await response.json();
+              if (data.success) {
+                setIsParentLoggedIn(true);
+                setParentData(data.parent);
+                setParentLoginError('');
+              } else {
+                setParentLoginError('Code si sahihi! Jaribu tena.');
+              }
+            } catch (error) {
+              setParentLoginError('Kuna tatizo, jaribu tena!');
+            }
+          }}>
+            <div className="form-group">
+              <label><i className="fas fa-key"></i> Parent Code</label>
+              <input 
+                type="text" 
+                value={parentCode}
+                onChange={(e) => setParentCode(e.target.value)}
+                placeholder="Weka code yako (kwa mfano: 123456)"
+                required
+              />
+            </div>
+            {parentLoginError && <div className="error-message">{parentLoginError}</div>}
+            <button type="submit" className="btn-login">
+              <i className="fas fa-sign-in-alt"></i> INGIA
+            </button>
+          </form>
+          <div className="login-footer">
+            <p>Huna code? Wasiliana na shule kwa msaada.</p>
+            <button onClick={() => setShowParentLogin(false)} className="btn-outline">
+              <i className="fas fa-arrow-left"></i> Rudi kwa Login ya Shule
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ============ PARENT DASHBOARD ============
+  if (isParentLoggedIn && parentData) {
+    return <ParentDashboard parentData={parentData} onLogout={() => {
+      setIsParentLoggedIn(false);
+      setParentData(null);
+      setParentCode('');
+    }} />;
+  }
 
   // ============ LOGIN PAGE ============
   if (!isLoggedIn) {
@@ -477,6 +648,13 @@ const handleResultsChange = (e) => {
                   <div>
                     <strong>User wa Kawaida</strong>
                     <small>Kutazama tu (Read only)</small>
+                  </div>
+                </button>
+                <button type="button" onClick={() => setShowParentLogin(true)} className="role-btn parent-role">
+                  <i className="fas fa-users"></i>
+                  <div>
+                    <strong>Mzazi / Guardian</strong>
+                    <small>Angalia matokeo ya mtoto wako</small>
                   </div>
                 </button>
               </div>
@@ -514,6 +692,7 @@ const handleResultsChange = (e) => {
           <div className="login-footer">
             <p><strong>Admin:</strong> admin / admin123</p>
             <p><strong>User:</strong> teacher / teacher123</p>
+            <p><strong>Parent:</strong> Ingiza code uliyopewa na shule</p>
           </div>
         </div>
       </div>
@@ -523,36 +702,34 @@ const handleResultsChange = (e) => {
   // ============ MAIN DASHBOARD ============
   return (
     <div className="container">
+      <marquee 
+        behavior="scroll" 
+        direction="left" 
+        scrollamount="4"
+        style={{
+          background: 'linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00cc00, #0099ff, #6600cc, #ff00ff)',
+          padding: '12px',
+          borderRadius: '50px',
+          marginBottom: '15px',
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: '1rem'
+        }}
+      >
+        🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |  💪 KARIBU SANA! 💪  |  📊 MODAL YA MATOKEO 📊  |  🎯 BEST STUDENT MANAGEMENT SYSTEM 🎯  |  ⭐ RATE US 5 STARS! ⭐  |  📞 CALL US: +255 XXX XXX 📞  |  ✉️ EMAIL: info@katwe.edu ✉️
+      </marquee>
+      
       <div className="school-header">
-        {/* Scrolling Text Banner */}
-        {/* MARQUEE - WEKA HAPA KWANZA KABISA */}
-        <marquee 
-          behavior="scroll" 
-          direction="left" 
-          scrollamount="4"
-          style={{
-            background: 'linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00cc00, #0099ff, #6600cc, #ff00ff)',
-            padding: '12px',
-            borderRadius: '50px',
-            marginBottom: '15px',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '1rem'
-          }}
-        >
-          🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |  💪 KARIBU SANA! 💪  |  📊 MODAL YA MATOKEO 📊  |  🎯 BEST STUDENT MANAGEMENT SYSTEM 🎯  |  ⭐ RATE US 5 STARS! ⭐  |  📞 CALL US: +255 XXX XXX 📞  |  ✉️ EMAIL: info@katwe.edu ✉️
-        </marquee>
-
         <div className="user-info">
           <i className={userRole === 'admin' ? 'fas fa-user-shield' : 'fas fa-user'}></i>
           <span>
-            <strong>{userName}</strong>
+            <strong>{userName}</strong> 
             <small>({userRole === 'admin' ? 'Administrator' : 'Regular User'})</small>
           </span>
-          <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
-          <p>STUDENT ANALYTICS & MANAGEMENT HUB & MATOKEO</p>
         </div>
-
+        <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
+        <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
+        
         <div className="toggle-buttons">
           <button 
             className={`toggle-btn ${showDashboard ? 'active' : ''}`}
@@ -567,9 +744,9 @@ const handleResultsChange = (e) => {
             <i className="fas fa-users"></i> Wanafunzi
           </button>
         </div>
-
+        
         <button onClick={handleLogout} className="logout-btn">
-          <i className="fas fa-sign-out-alt"></i> TOKA MFUMO
+          <i className="fas fa-sign-out-alt"></i> TONDA MFUMO
         </button>
       </div>
 
@@ -589,7 +766,7 @@ const handleResultsChange = (e) => {
                 {!canAdd && (
                   <div className="permission-message">
                     <i className="fas fa-info-circle"></i>
-                    <p>Samahani, Huna ruhusa ya kuongeza au kuhariri wanafunzi.</p>
+                    <p>Samahani, wewe ni user wa kawaida. Huna ruhusa ya kuongeza au kuhariri wanafunzi.</p>
                   </div>
                 )}
                 <form onSubmit={handleSubmit}>
@@ -702,8 +879,13 @@ const handleResultsChange = (e) => {
                               </button>
                               {canEdit && <button className="btn btn-sm btn-outline" onClick={() => handleEdit(student)}><i className="fas fa-edit"></i> Edit</button>}
                               {canDelete && <button className="btn btn-sm btn-danger" onClick={() => handleDelete(student.id)}><i className="fas fa-trash-alt"></i> Futa</button>}
-                            </td>
-                          </tr>
+                              {canEdit && (
+                                <button className="btn btn-sm btn-success" onClick={() => generateParentCode(student)}>
+                                  <i className="fas fa-users"></i> Parent Code
+                                </button>
+                              )}
+                             </td>
+                           </tr>
                         ))
                       )}
                     </tbody>
@@ -745,6 +927,18 @@ const handleResultsChange = (e) => {
                       <div className="subject-row">
                         <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} />
                         <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange}>
+                          <option value="">Daraja</option>
+                          <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
+                          <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label>SOMO LA 3</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject3" placeholder="Jina la somo" value={resultsData.subject3} onChange={handleResultsChange} />
+                        <select name="grade3" value={resultsData.grade3} onChange={handleResultsChange}>
                           <option value="">Daraja</option>
                           <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
                           <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
