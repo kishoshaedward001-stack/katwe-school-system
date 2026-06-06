@@ -1800,3 +1800,86 @@ textarea:focus {
   font-size: 0.85rem;
   color: #475569;
 }
+/* Timetable Styles */
+.timetable-container {
+  padding: 1rem;
+}
+
+.timetable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.class-selector {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.class-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.class-btn.active {
+  background: #1e3c72;
+  color: white;
+  border-color: #1e3c72;
+}
+
+.timetable-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
+}
+
+.timetable-table th,
+.timetable-table td {
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem;
+  text-align: center;
+  min-width: 100px;
+}
+
+.timetable-table th {
+  background: #f1f6fe;
+  font-weight: 600;
+}
+
+.time-slot {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.subject-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.subject-info strong {
+  color: #1e3c72;
+}
+
+.subject-info small {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.empty-slot {
+  color: #cbd5e1;
+}
+
+.timetable-toolbar {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+}

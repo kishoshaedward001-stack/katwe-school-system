@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
+import Timetable from './components/Timetable';
 
 // ============ DASHBOARD COMPONENT ============
 const StatisticsDashboard = ({ students }) => {
@@ -122,7 +123,7 @@ const StatisticsDashboard = ({ students }) => {
               </span>
               <span className="recent-badge">{student.gender}</span>
             </div>
-          ))}
+          ))};
           {recentStudents.length === 0 && (
             <div className="no-data">
               <i className="fas fa-folder-open"></i>
@@ -134,25 +135,25 @@ const StatisticsDashboard = ({ students }) => {
     </div>
   );
 };
+
+// ============ PARENT DASHBOARD COMPONENT ============
 const ParentDashboard = ({ parentData, onLogout }) => {
   const [student, setStudent] = useState(null);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
-        
-        // Fetch student info
         const studentRes = await fetch(`${API_URL}/parents/${parentData.parentcode}/student`);
         const studentData = await studentRes.json();
         
         if (studentData.success) {
           setStudent(studentData.student);
           
-          // Fetch results for this student
           const resultsRes = await fetch(`${API_URL}/parents/${parentData.parentcode}/results`);
           const resultsData = await resultsRes.json();
           
@@ -173,7 +174,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
     if (parentData && parentData.parentcode) {
       fetchData();
     }
-  }, [parentData]);
+  }, [parentData, API_URL]);
 
   if (loading) {
     return (
@@ -222,23 +223,6 @@ const ParentDashboard = ({ parentData, onLogout }) => {
     );
   }
 
-  // Calculate GPA and average
-  const calculateGPA = () => {
-    if (results.length === 0) return null;
-    const latestResults = results[0];
-    const grades = [latestResults.grade1, latestResults.grade2, latestResults.grade3, latestResults.grade4];
-    const gradePoints = { 'A': 4, 'B+': 3.5, 'B': 3, 'C+': 2.5, 'C': 2, 'D': 1, 'F': 0 };
-    let total = 0;
-    let count = 0;
-    grades.forEach(g => {
-      if (g && gradePoints[g]) {
-        total += gradePoints[g];
-        count++;
-      }
-    });
-    return count > 0 ? (total / count).toFixed(2) : null;
-  };
-
   return (
     <div className="container">
       <div className="school-header">
@@ -260,12 +244,10 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         
         <div className="results-card">
           <h3><i className="fas fa-chart-line"></i> Matokeo ya Mitihani</h3>
-          
           {results.length === 0 ? (
             <div className="results-placeholder">
               <i className="fas fa-file-alt"></i>
               <p>Bado hakuna matokeo yaliyochapishwa.</p>
-              <small>Matokeo yataonekana hapa baada ya kuchapishwa na mwalimu.</small>
             </div>
           ) : (
             <div className="results-list">
@@ -273,12 +255,9 @@ const ParentDashboard = ({ parentData, onLogout }) => {
                 <div key={index} className="result-item">
                   <div className="result-header">
                     <span className="result-term">📅 {result.term} - {result.year}</span>
-                    <span className="result-gpa">GPA: {calculateGPA() || 'N/A'}</span>
                   </div>
                   <table className="result-table">
-                    <thead>
-                      <tr><th>Somo</th><th>Daraja</th></tr>
-                    </thead>
+                    <thead><tr><th>Somo</th><th>Daraja</th></tr></thead>
                     <tbody>
                       {result.subject1 && <tr><td>{result.subject1}</td><td className="grade">{result.grade1}</td></tr>}
                       {result.subject2 && <tr><td>{result.subject2}</td><td className="grade">{result.grade2}</td></tr>}
@@ -296,6 +275,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
     </div>
   );
 };
+
 // ============ MAIN APP COMPONENT ============
 function App() {
   // ============ STATE ZA LOGIN ============
@@ -317,6 +297,7 @@ function App() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showDashboard, setShowDashboard] = useState(true);
+  const [showTimetable, setShowTimetable] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [formData, setFormData] = useState({ 
     fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: ''
@@ -421,6 +402,8 @@ function App() {
     setSelectedRole(null);
     setLoginForm({ username: '', password: '' });
     setStudents([]);
+    setShowDashboard(true);
+    setShowTimetable(false);
   };
 
   // ============ PHOTO UPLOAD ============
@@ -537,7 +520,7 @@ function App() {
       });
       const data = await response.json();
       if (data.success) {
-        alert(`✅ Code ya mzazi: ${data.parentCode}\n\nWape mzazi code hii kuingia kwenye Parent Portal.\n\nWaambie waingie kwenye website yetu na kuchagua "Parent Login".`);
+        alert(`✅ Code ya mzazi: ${data.parentCode}\n\nWape mzazi code hii kuingia kwenye Parent Portal.`);
       } else {
         alert('❌ Imeshindwa kuunda code. Jaribu tena!');
       }
@@ -566,111 +549,109 @@ function App() {
     setResultsData({ ...resultsData, [e.target.name]: e.target.value });
   };
 
- const handleSendResults = async () => {
-    // Check if at least one subject is filled
+  const handleSendResults = async () => {
     if (!resultsData.subject1 || !resultsData.grade1) {
-        alert('Tafadhali jaza angalau somo moja na daraja lake!');
-        return;
+      alert('Tafadhali jaza angalau somo moja na daraja lake!');
+      return;
     }
     
-    // Check if sending method is selected
     if (!resultsData.sendMethod) {
-        alert('Chagua njia ya kutuma (Email au SMS)!');
-        return;
+      alert('Chagua njia ya kutuma (Email au SMS)!');
+      return;
     }
 
     setSendingStatus('processing');
     
     try {
-        // FIRST: Save results to database
-        const saveResponse = await fetch(`${API_URL}/results`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                studentId: selectedStudent.id,
-                subject1: resultsData.subject1,
-                grade1: resultsData.grade1,
-                subject2: resultsData.subject2,
-                grade2: resultsData.grade2,
-                subject3: resultsData.subject3,
-                grade3: resultsData.grade3,
-                subject4: resultsData.subject4,
-                grade4: resultsData.grade4,
-                remarks: resultsData.remarks,
-                term: 'Term 1',
-                year: new Date().getFullYear()
-            })
+      // Save results to database first
+      const saveResponse = await fetch(`${API_URL}/results`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: selectedStudent.id,
+          subject1: resultsData.subject1,
+          grade1: resultsData.grade1,
+          subject2: resultsData.subject2,
+          grade2: resultsData.grade2,
+          subject3: resultsData.subject3,
+          grade3: resultsData.grade3,
+          subject4: resultsData.subject4,
+          grade4: resultsData.grade4,
+          remarks: resultsData.remarks,
+          term: 'Term 1',
+          year: new Date().getFullYear()
+        })
+      });
+      
+      const saveData = await saveResponse.json();
+      
+      if (!saveData.success) {
+        alert('❌ Imeshindwa kuhifadhi matokeo!');
+        setSendingStatus('');
+        return;
+      }
+      
+      // Then send via email or SMS
+      if (resultsData.sendMethod === 'email') {
+        if (!selectedStudent.email) {
+          alert('Mwanafunzi hana anuani ya email!');
+          setSendingStatus('');
+          return;
+        }
+        
+        const emailResponse = await fetch(`${API_URL}/send-results`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student: selectedStudent,
+            results: resultsData
+          })
         });
         
-        const saveData = await saveResponse.json();
+        const emailData = await emailResponse.json();
         
-        if (!saveData.success) {
-            alert('❌ Imeshindwa kuhifadhi matokeo kwenye database!');
-            setSendingStatus('');
-            return;
+        if (emailData.success) {
+          alert(`✅ Matokeo yamehifadhiwa na kutumwa kwa email!`);
+          setShowModal(false);
+          fetchStudents();
+        } else {
+          alert('⚠️ Matokeo yamehifadhiwa lakini imeshindwa kutuma email!');
+        }
+      } 
+      else if (resultsData.sendMethod === 'sms') {
+        if (!selectedStudent.phone) {
+          alert('Mwanafunzi hana namba ya simu!');
+          setSendingStatus('');
+          return;
         }
         
-        // SECOND: Send via email or SMS
-        if (resultsData.sendMethod === 'email') {
-            if (!selectedStudent.email) {
-                alert('Mwanafunzi hana anuani ya email!');
-                setSendingStatus('');
-                return;
-            }
-            
-            const emailResponse = await fetch(`${API_URL}/send-results`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    student: selectedStudent,
-                    results: resultsData
-                })
-            });
-            
-            const emailData = await emailResponse.json();
-            
-            if (emailData.success) {
-                alert(`✅ Matokeo yamehifadhiwa na kutumwa kwa email ya ${selectedStudent.email}`);
-                setShowModal(false);
-                // Refresh student list to show updated results
-                fetchStudents();
-            } else {
-                alert('⚠️ Matokeo yamehifadhiwa lakini imeshindwa kutuma email!');
-            }
-        } 
-        else if (resultsData.sendMethod === 'sms') {
-            if (!selectedStudent.phone) {
-                alert('Mwanafunzi hana namba ya simu!');
-                setSendingStatus('');
-                return;
-            }
-            
-            const smsResponse = await fetch(`${API_URL}/send-sms`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    student: selectedStudent,
-                    results: resultsData
-                })
-            });
-            
-            const smsData = await smsResponse.json();
-            
-            if (smsData.success) {
-                alert(`✅ Matokeo yamehifadhiwa na kutumwa kwa SMS kwa namba ${selectedStudent.phone}`);
-                setShowModal(false);
-                fetchStudents();
-            } else {
-                alert('⚠️ Matokeo yamehifadhiwa lakini imeshindwa kutuma SMS!');
-            }
+        const smsResponse = await fetch(`${API_URL}/send-sms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student: selectedStudent,
+            results: resultsData
+          })
+        });
+        
+        const smsData = await smsResponse.json();
+        
+        if (smsData.success) {
+          alert(`✅ Matokeo yamehifadhiwa na kutumwa kwa SMS!`);
+          setShowModal(false);
+          fetchStudents();
+        } else {
+          alert('⚠️ Matokeo yamehifadhiwa lakini imeshindwa kutuma SMS!');
         }
+      }
     } catch (error) {
-        console.error('Send error:', error);
-        alert('❌ Kuna tatizo, jaribu tena!');
+      console.error('Send error:', error);
+      alert('❌ Kuna tatizo, jaribu tena!');
     } finally {
-        setSendingStatus('');
+      setSendingStatus('');
     }
-};
+  };
+
   // ============ FILTER STUDENTS ============
   const filteredStudents = students.filter(s =>
     s.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -689,65 +670,57 @@ function App() {
   };
 
   // ============ PARENT LOGIN PAGE ============
-  // Parent Login Page
-if (showParentLogin && !isParentLoggedIn) {
+  if (showParentLogin && !isParentLoggedIn) {
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <div className="login-header">
-                    <i className="fas fa-users"></i>
-                    <h1>KATWE SECONDARY SCHOOL</h1>
-                    <p>Parent Portal - Ingiza Code Yako</p>
-                </div>
-                <form onSubmit={async (e) => {
-                    e.preventDefault();
-                    try {
-                        console.log('Sending code:', parentCode); // ONGEZA HII
-                        const response = await fetch(`${API_URL}/parents/login`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ parentCode })
-                        });
-                        const data = await response.json();
-                        console.log('Response data:', data); // ONGEZA HII
-                        if (data.success) {
-                            console.log('Parent data:', data.parent); // ONGEZA HII
-                            setIsParentLoggedIn(true);
-                            setParentData(data.parent);
-                            setParentLoginError('');
-                        } else {
-                            setParentLoginError('Code si sahihi! Jaribu tena.');
-                        }
-                    } catch (error) {
-                        console.error('Login error:', error);
-                        setParentLoginError('Kuna tatizo, jaribu tena!');
-                    }
-                }}>
-                    <div className="form-group">
-                        <label><i className="fas fa-key"></i> Parent Code</label>
-                        <input 
-                            type="text" 
-                            value={parentCode}
-                            onChange={(e) => setParentCode(e.target.value)}
-                            placeholder="Weka code yako (kwa mfano: 123456)"
-                            required
-                        />
-                    </div>
-                    {parentLoginError && <div className="error-message">{parentLoginError}</div>}
-                    <button type="submit" className="btn-login">
-                        <i className="fas fa-sign-in-alt"></i> INGIA
-                    </button>
-                </form>
-                <div className="login-footer">
-                    <p>Huna code? Wasiliana na shule kwa msaada.</p>
-                    <button onClick={() => setShowParentLogin(false)} className="btn-outline">
-                        <i className="fas fa-arrow-left"></i> Rudi kwa Login ya Shule
-                    </button>
-                </div>
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-header">
+            <i className="fas fa-users"></i>
+            <h1>KATWE SECONDARY SCHOOL</h1>
+            <p>Parent Portal - Ingiza Code Yako</p>
+          </div>
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            try {
+              const response = await fetch(`${API_URL}/parents/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ parentCode })
+              });
+              const data = await response.json();
+              if (data.success) {
+                setIsParentLoggedIn(true);
+                setParentData(data.parent);
+                setParentLoginError('');
+              } else {
+                setParentLoginError('Code si sahihi! Jaribu tena.');
+              }
+            } catch (error) {
+              setParentLoginError('Kuna tatizo, jaribu tena!');
+            }
+          }}>
+            <div className="form-group">
+              <label><i className="fas fa-key"></i> Parent Code</label>
+              <input 
+                type="text" 
+                value={parentCode}
+                onChange={(e) => setParentCode(e.target.value)}
+                placeholder="Weka code yako (kwa mfano: 123456)"
+                required
+              />
             </div>
+            {parentLoginError && <div className="error-message">{parentLoginError}</div>}
+            <button type="submit" className="btn-login">INGIA</button>
+          </form>
+          <div className="login-footer">
+            <p>Huna code? Wasiliana na shule kwa msaada.</p>
+            <button onClick={() => setShowParentLogin(false)} className="btn-outline">Rudi kwa Login ya Shule</button>
+          </div>
         </div>
+      </div>
     );
-}
+  }
+
   // ============ PARENT DASHBOARD ============
   if (isParentLoggedIn && parentData) {
     return <ParentDashboard parentData={parentData} onLogout={() => {
@@ -774,24 +747,15 @@ if (showParentLogin && !isParentLoggedIn) {
               <div className="role-buttons">
                 <button type="button" onClick={() => handleRoleSelect('admin')} className="role-btn admin-role">
                   <i className="fas fa-user-shield"></i>
-                  <div>
-                    <strong>Admin</strong>
-                    <small>Access kamili ya kudhibiti</small>
-                  </div>
+                  <div><strong>Admin</strong><small>Access kamili ya kudhibiti</small></div>
                 </button>
                 <button type="button" onClick={() => handleRoleSelect('user')} className="role-btn user-role">
                   <i className="fas fa-user"></i>
-                  <div>
-                    <strong>User wa Kawaida</strong>
-                    <small>Kutazama tu (Read only)</small>
-                  </div>
+                  <div><strong>User wa Kawaida</strong><small>Kutazama tu (Read only)</small></div>
                 </button>
                 <button type="button" onClick={() => setShowParentLogin(true)} className="role-btn parent-role">
                   <i className="fas fa-users"></i>
-                  <div>
-                    <strong>Mzazi / Guardian</strong>
-                    <small>Angalia matokeo ya mtoto wako</small>
-                  </div>
+                  <div><strong>Mzazi / Guardian</strong><small>Angalia matokeo ya mtoto wako</small></div>
                 </button>
               </div>
             </div>
@@ -802,26 +766,18 @@ if (showParentLogin && !isParentLoggedIn) {
                   <i className={selectedRole === 'admin' ? 'fas fa-user-shield' : 'fas fa-user'}></i>
                   {selectedRole === 'admin' ? ' Admin Login' : ' User Login'}
                 </span>
-                <button type="button" onClick={() => setSelectedRole(null)} className="change-role-btn">
-                  <i className="fas fa-arrow-left"></i> Badilisha
-                </button>
+                <button type="button" onClick={() => setSelectedRole(null)} className="change-role-btn">Badilisha</button>
               </div>
-              
               <div className="form-group">
                 <label><i className="fas fa-user"></i> Username</label>
                 <input type="text" name="username" value={loginForm.username} onChange={handleLoginChange} placeholder={selectedRole === 'admin' ? "admin" : "teacher"} required />
               </div>
-              
               <div className="form-group">
                 <label><i className="fas fa-lock"></i> Password</label>
                 <input type="password" name="password" value={loginForm.password} onChange={handleLoginChange} placeholder="••••••••" required />
               </div>
-              
               {loginError && <div className="error-message">{loginError}</div>}
-              
-              <button type="submit" className="btn-login">
-                <i className="fas fa-sign-in-alt"></i> INGIA
-              </button>
+              <button type="submit" className="btn-login">INGIA</button>
             </form>
           )}
           
@@ -852,41 +808,35 @@ if (showParentLogin && !isParentLoggedIn) {
           fontSize: '1rem'
         }}
       >
-        🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |  💪 KARIBU SANA! 💪  |  📊 MODAL YA MATOKEO 📊  |  🎯 BEST STUDENT MANAGEMENT SYSTEM 🎯  |  ⭐ RATE US 5 STARS! ⭐  |  📞 CALL US: +255 XXX XXX 📞  |  ✉️ EMAIL: info@katwe.edu ✉️
+        🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |  💪 KARIBU SANA! 💪
       </marquee>
       
       <div className="school-header">
         <div className="user-info">
           <i className={userRole === 'admin' ? 'fas fa-user-shield' : 'fas fa-user'}></i>
-          <span>
-            <strong>{userName}</strong> 
-            <small>({userRole === 'admin' ? 'Administrator' : 'Regular User'})</small>
-          </span>
+          <span><strong>{userName}</strong><small>({userRole === 'admin' ? 'Administrator' : 'Regular User'})</small></span>
         </div>
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
         <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
         
         <div className="toggle-buttons">
-          <button 
-            className={`toggle-btn ${showDashboard ? 'active' : ''}`}
-            onClick={() => setShowDashboard(true)}
-          >
+          <button className={`toggle-btn ${showDashboard && !showTimetable ? 'active' : ''}`} onClick={() => { setShowDashboard(true); setShowTimetable(false); }}>
             <i className="fas fa-chart-line"></i> Dashboard
           </button>
-          <button 
-            className={`toggle-btn ${!showDashboard ? 'active' : ''}`}
-            onClick={() => setShowDashboard(false)}
-          >
+          <button className={`toggle-btn ${!showDashboard && !showTimetable ? 'active' : ''}`} onClick={() => { setShowDashboard(false); setShowTimetable(false); }}>
             <i className="fas fa-users"></i> Wanafunzi
+          </button>
+          <button className={`toggle-btn ${showTimetable ? 'active' : ''}`} onClick={() => { setShowDashboard(false); setShowTimetable(true); }}>
+            <i className="fas fa-calendar-alt"></i> Timetable
           </button>
         </div>
         
-        <button onClick={handleLogout} className="logout-btn">
-          <i className="fas fa-sign-out-alt"></i> TONDA MFUMO
-        </button>
+        <button onClick={handleLogout} className="logout-btn">TONDA MFUMO</button>
       </div>
 
-      {showDashboard ? (
+      {showTimetable ? (
+        <Timetable />
+      ) : showDashboard ? (
         <StatisticsDashboard students={students} />
       ) : (
         <>
@@ -908,15 +858,15 @@ if (showParentLogin && !isParentLoggedIn) {
                 <form onSubmit={handleSubmit}>
                   <div className="form-group">
                     <label>JINA KAMILI *</label>
-                    <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Mfano: Mariamu Ramadhani" required disabled={!canAdd} />
+                    <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
                     <label>UMRI *</label>
-                    <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="22" required disabled={!canAdd} />
+                    <input type="number" name="age" value={formData.age} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
                     <label>KOZI YA MASOMO *</label>
-                    <input type="text" name="course" value={formData.course} onChange={handleChange} placeholder="Information Technology" required disabled={!canAdd} />
+                    <input type="text" name="course" value={formData.course} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
                     <label>JINSIA *</label>
@@ -928,29 +878,21 @@ if (showParentLogin && !isParentLoggedIn) {
                   </div>
                   <div className="form-group">
                     <label>Namba ya Simu (Kwa SMS)</label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="0712345678" disabled={!canAdd} />
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} disabled={!canAdd} />
                   </div>
                   <div className="form-group">
                     <label>Barua pepe (Email)</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="mwanafunzi@email.com" disabled={!canAdd} />
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} disabled={!canAdd} />
                   </div>
                   
-                  {/* PHOTO UPLOAD SECTION */}
                   <div className="form-group">
                     <label>PICHA YA MWANAFUNZI</label>
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                      disabled={!canAdd || uploadingPhoto}
-                    />
+                    <input type="file" accept="image/*" onChange={handlePhotoUpload} disabled={!canAdd || uploadingPhoto} />
                     {uploadingPhoto && <div className="uploading-text"><i className="fas fa-spinner fa-spin"></i> Inapakia picha...</div>}
                     {formData.photo && (
                       <div className="photo-preview">
                         <img src={formData.photo} alt="Student" />
-                        <button type="button" onClick={() => setFormData({...formData, photo: ''})} className="btn-remove-photo">
-                          <i className="fas fa-trash"></i> Futa Picha
-                        </button>
+                        <button type="button" onClick={() => setFormData({...formData, photo: ''})} className="btn-remove-photo">Futa Picha</button>
                       </div>
                     )}
                   </div>
@@ -973,9 +915,7 @@ if (showParentLogin && !isParentLoggedIn) {
               <div className="card-body">
                 <div className="search-section">
                   <input type="text" className="search-input" placeholder="🔍 Tafuta kwa jina au kozi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-                  <span className="stat-badge">
-                    <i className="fas fa-search"></i> Wanafunzi {filteredStudents.length}
-                  </span>
+                  <span className="stat-badge">Wanafunzi {filteredStudents.length}</span>
                 </div>
                 
                 {loading && <div className="loading-spinner">Inapakia data...</div>}
@@ -983,14 +923,7 @@ if (showParentLogin && !isParentLoggedIn) {
                 <div className="table-wrapper">
                   <table className="student-table">
                     <thead>
-                      <tr>
-                        <th>PICHA</th>
-                        <th>JINA</th>
-                        <th>KOZI</th>
-                        <th>SIMU</th>
-                        <th>EMAIL</th>
-                        <th>VITENDO</th>
-                      </tr>
+                      <tr><th>PICHA</th><th>JINA</th><th>KOZI</th><th>SIMU</th><th>EMAIL</th><th>VITENDO</th></tr>
                     </thead>
                     <tbody>
                       {filteredStudents.length === 0 && !loading ? (
@@ -999,29 +932,19 @@ if (showParentLogin && !isParentLoggedIn) {
                         filteredStudents.map(student => (
                           <tr key={student.id}>
                             <td className="photo-cell">
-                              {student.photo ? (
-                                <img src={student.photo} alt={student.fullName} className="student-thumb" />
-                              ) : (
-                                <div className="no-photo">📷</div>
-                              )}
+                              {student.photo ? <img src={student.photo} alt={student.fullName} className="student-thumb" /> : <div className="no-photo">📷</div>}
                             </td>
                             <td><strong>{student.fullName}</strong><br/><small>{student.age} yrs | {student.gender}</small></td>
                             <td>{student.course}</td>
                             <td>{student.phone || '—'}</td>
                             <td>{student.email || '—'}</td>
                             <td className="action-buttons">
-                              <button className="btn btn-sm btn-primary" onClick={() => openResultsModal(student)}>
-                                <i className="fas fa-chart-line"></i> Matokeo
-                              </button>
+                              <button className="btn btn-sm btn-primary" onClick={() => openResultsModal(student)}><i className="fas fa-chart-line"></i> Matokeo</button>
                               {canEdit && <button className="btn btn-sm btn-outline" onClick={() => handleEdit(student)}><i className="fas fa-edit"></i> Edit</button>}
                               {canDelete && <button className="btn btn-sm btn-danger" onClick={() => handleDelete(student.id)}><i className="fas fa-trash-alt"></i> Futa</button>}
-                              {canEdit && (
-                                <button className="btn btn-sm btn-success" onClick={() => generateParentCode(student)}>
-                                  <i className="fas fa-users"></i> Parent Code
-                                </button>
-                              )}
-                             </td>
-                           </tr>
+                              {canEdit && <button className="btn btn-sm btn-success" onClick={() => generateParentCode(student)}><i className="fas fa-users"></i> Parent Code</button>}
+                            </td>
+                          </tr>
                         ))
                       )}
                     </tbody>
@@ -1096,7 +1019,7 @@ if (showParentLogin && !isParentLoggedIn) {
                         </label>
                         <label className="send-option">
                           <input type="radio" name="sendMethod" value="sms" onChange={handleResultsChange} />
-                          <i className="fas fa-sms"></i> Tuma kwa SMS ({selectedStudent.phone || 'Hakuna namba'})
+                          <i className="fas fa-comment"></i> Tuma kwa SMS ({selectedStudent.phone || 'Hakuna namba'})
                         </label>
                       </div>
                     </div>
@@ -1116,9 +1039,8 @@ if (showParentLogin && !isParentLoggedIn) {
             </div>
           )}
         </>
-      )}
-    </div>
+      )};
+     </div>
   );
 }
-
 export default App;
