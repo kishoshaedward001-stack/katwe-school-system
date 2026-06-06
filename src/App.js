@@ -136,32 +136,31 @@ const StatisticsDashboard = ({ students }) => {
 };
 const ParentDashboard = ({ parentData, onLogout }) => {
   const [student, setStudent] = useState(null);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchStudent = async () => {
+    const fetchData = async () => {
       try {
-        console.log('ParentData:', parentData); // Angalia hii kwenye console
-        
         const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
-        const url = `${API_URL}/parents/${parentData.parentcode}/student`;
-        console.log('Fetching URL:', url); // Angalia URL
         
-        const response = await fetch(url);
-        console.log('Response status:', response.status);
+        // Fetch student info
+        const studentRes = await fetch(`${API_URL}/parents/${parentData.parentcode}/student`);
+        const studentData = await studentRes.json();
         
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Response data:', data);
-        
-        if (data.success) {
-          setStudent(data.student);
+        if (studentData.success) {
+          setStudent(studentData.student);
+          
+          // Fetch results for this student
+          const resultsRes = await fetch(`${API_URL}/parents/${parentData.parentcode}/results`);
+          const resultsData = await resultsRes.json();
+          
+          if (resultsData.success) {
+            setResults(resultsData.results);
+          }
         } else {
-          setError(data.error);
+          setError(studentData.error);
         }
       } catch (err) {
         console.error('Fetch error:', err);
@@ -172,11 +171,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
     };
     
     if (parentData && parentData.parentcode) {
-      fetchStudent();
-    } else {
-      console.error('No parentcode found!', parentData);
-      setLoading(false);
-      setError('Parent code not found');
+      fetchData();
     }
   }, [parentData]);
 
@@ -189,8 +184,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         </div>
         <div className="loading-container">
           <i className="fas fa-spinner fa-spin"></i>
-          <p>Inapakia taarifa za mwanafunzi...</p>
-          <p style={{fontSize: '12px', marginTop: '10px'}}>Tafadhali subiri...</p>
+          <p>Inapakia taarifa...</p>
         </div>
       </div>
     );
@@ -228,6 +222,23 @@ const ParentDashboard = ({ parentData, onLogout }) => {
     );
   }
 
+  // Calculate GPA and average
+  const calculateGPA = () => {
+    if (results.length === 0) return null;
+    const latestResults = results[0];
+    const grades = [latestResults.grade1, latestResults.grade2, latestResults.grade3, latestResults.grade4];
+    const gradePoints = { 'A': 4, 'B+': 3.5, 'B': 3, 'C+': 2.5, 'C': 2, 'D': 1, 'F': 0 };
+    let total = 0;
+    let count = 0;
+    grades.forEach(g => {
+      if (g && gradePoints[g]) {
+        total += gradePoints[g];
+        count++;
+      }
+    });
+    return count > 0 ? (total / count).toFixed(2) : null;
+  };
+
   return (
     <div className="container">
       <div className="school-header">
@@ -249,17 +260,42 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         
         <div className="results-card">
           <h3><i className="fas fa-chart-line"></i> Matokeo ya Mitihani</h3>
-          <div className="results-placeholder">
-            <i className="fas fa-file-alt"></i>
-            <p>Matokeo yataonekana hapa baada ya kuchapishwa na mwalimu.</p>
-            <small>Taarifa za matokeo zitawasiliana nawe kupitia email au SMS.</small>
-          </div>
+          
+          {results.length === 0 ? (
+            <div className="results-placeholder">
+              <i className="fas fa-file-alt"></i>
+              <p>Bado hakuna matokeo yaliyochapishwa.</p>
+              <small>Matokeo yataonekana hapa baada ya kuchapishwa na mwalimu.</small>
+            </div>
+          ) : (
+            <div className="results-list">
+              {results.map((result, index) => (
+                <div key={index} className="result-item">
+                  <div className="result-header">
+                    <span className="result-term">📅 {result.term} - {result.year}</span>
+                    <span className="result-gpa">GPA: {calculateGPA() || 'N/A'}</span>
+                  </div>
+                  <table className="result-table">
+                    <thead>
+                      <tr><th>Somo</th><th>Daraja</th></tr>
+                    </thead>
+                    <tbody>
+                      {result.subject1 && <tr><td>{result.subject1}</td><td className="grade">{result.grade1}</td></tr>}
+                      {result.subject2 && <tr><td>{result.subject2}</td><td className="grade">{result.grade2}</td></tr>}
+                      {result.subject3 && <tr><td>{result.subject3}</td><td className="grade">{result.grade3}</td></tr>}
+                      {result.subject4 && <tr><td>{result.subject4}</td><td className="grade">{result.grade4}</td></tr>}
+                    </tbody>
+                  </table>
+                  {result.remarks && <p className="result-remarks"><strong>Maoni:</strong> {result.remarks}</p>}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
-
 // ============ MAIN APP COMPONENT ============
 function App() {
   // ============ STATE ZA LOGIN ============
