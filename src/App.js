@@ -362,7 +362,7 @@ const handleResultsChange = (e) => {
         alert('Tafadhali jaza angalau somo moja na daraja lake!');
         return;
     }
-    
+
     // Check if sending method is selected
     if (!resultsData.sendMethod) {
         alert('Chagua njia ya kutuma (Email au SMS)!');
@@ -380,7 +380,7 @@ const handleResultsChange = (e) => {
                 return;
             }
             
-            // Send to backend API
+            // Send email via backend
             const response = await fetch(`${API_URL}/send-results`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -394,12 +394,37 @@ const handleResultsChange = (e) => {
             
             if (data.success) {
                 alert(`✅ Matokeo yametumwa kwa email ya ${selectedStudent.email}`);
-                setShowModal(false); // Close modal
+                setShowModal(false);
             } else {
                 alert('❌ Imeshindwa kutuma email. Jaribu tena!');
             }
-        } else if (resultsData.sendMethod === 'sms') {
-            alert('⚠️ Huduma ya SMS bado haijaunganishwa. Tafadhali tumia Email kwa sasa.');
+        } 
+        else if (resultsData.sendMethod === 'sms') {
+            // Check if student has phone number
+            if (!selectedStudent.phone) {
+                alert('Mwanafunzi hana namba ya simu!');
+                setSendingStatus('');
+                return;
+            }
+            
+            // Send SMS via backend
+            const response = await fetch(`${API_URL}/send-sms`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    student: selectedStudent,
+                    results: resultsData
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert(`✅ Matokeo yametumwa kwa SMS kwa namba ${selectedStudent.phone}`);
+                setShowModal(false);
+            } else {
+                alert('❌ Imeshindwa kutuma SMS. Jaribu tena!');
+            }
         }
     } catch (error) {
         console.error('Send error:', error);
@@ -408,7 +433,6 @@ const handleResultsChange = (e) => {
         setSendingStatus('');
     }
 };
-
   // ============ FILTER STUDENTS ============
   const filteredStudents = students.filter(s =>
     s.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
