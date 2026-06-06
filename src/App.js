@@ -498,16 +498,36 @@ function App() {
   // ============ MAIN DASHBOARD ============
   return (
     <div className="container">
-      <div className="school-header">
+        <div className="school-header">
+  {/* Scrolling Text Banner */}
+  <div className="scrolling-banner">
+    <div className="scrolling-text">
+      <span className="color-word">🔥 HELLO! 🔥</span>
+      <span className="color-word">✨ WELCOME TO KATWE SECONDARY SCHOOL ✨</span>
+      <span className="color-word">📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚</span>
+      <span className="color-word">🎓 ENJOY OUR WEBSITE! 🎓</span>
+      <span className="color-word">💪 KARIBU SANA! 💪</span>
+      <span className="color-word">📊 MODAL YA MATOKEO 📊</span>
+      <span className="color-word">🎯 BEST STUDENT MANAGEMENT SYSTEM 🎯</span>
+    </div>
+  </div>
+  
+  {/* Rest of your header content */}
+  <div className="user-info">
+    {/* ... existing code ... */}
+  </div>
+  <h1>...</h1>
+  <p>...</p>
+  {/* ... rest ... */}
+</div>
         <div className="user-info">
           <i className={userRole === 'admin' ? 'fas fa-user-shield' : 'fas fa-user'}></i>
           <span>
             <strong>{userName}</strong> 
             <small>({userRole === 'admin' ? 'Administrator' : 'Regular User'})</small>
           </span>
-        </div>
-        <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
-        <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
+            <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
+        <p>STUDENT ANALYTICS & MANAGEMENT HUB & MATOKEO</p>
         
         <div className="toggle-buttons">
           <button 
@@ -525,7 +545,7 @@ function App() {
         </div>
         
         <button onClick={handleLogout} className="logout-btn">
-          <i className="fas fa-sign-out-alt"></i> TONDA MFUMO
+          <i className="fas fa-sign-out-alt"></i> TOKA MFUMO
         </button>
       </div>
 
@@ -545,7 +565,7 @@ function App() {
                 {!canAdd && (
                   <div className="permission-message">
                     <i className="fas fa-info-circle"></i>
-                    <p>Samahani, wewe ni user wa kawaida. Huna ruhusa ya kuongeza au kuhariri wanafunzi.</p>
+                    <p>Samahani, Huna ruhusa ya kuongeza au kuhariri wanafunzi.</p>
                   </div>
                 )}
                 <form onSubmit={handleSubmit}>
