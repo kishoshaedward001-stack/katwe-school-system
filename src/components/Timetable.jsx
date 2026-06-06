@@ -1,5 +1,3 @@
-
-cat > Timetable.jsx << 'EOF'
 import React, { useState, useEffect } from 'react';
 
 const Timetable = () => {
@@ -125,4 +123,3 @@ const Timetable = () => {
 };
 
 export default Timetable;
-EOF
