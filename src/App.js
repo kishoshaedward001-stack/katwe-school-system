@@ -136,28 +136,92 @@ const StatisticsDashboard = ({ students }) => {
 };
 
 // ============ PARENT DASHBOARD COMPONENT ============
+// ============ PARENT DASHBOARD COMPONENT ============
 const ParentDashboard = ({ parentData, onLogout }) => {
-  const [results, setResults] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [student, setStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchResults();
-  }, []);
-
-  const fetchResults = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api'}/parents/${parentData.parentcode}/results`);
-      const data = await response.json();
-      if (data.success) {
-        setResults(data.student);
+    const fetchStudent = async () => {
+      try {
+        const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
+        const response = await fetch(`${API_URL}/parents/${parentData.parentcode}/student`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setStudent(data.student);
+        } else {
+          setError(data.error);
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching results:', error);
-    } finally {
-      setLoading(false);
+    };
+    
+    if (parentData && parentData.parentcode) {
+      fetchStudent();
     }
-  };
+  }, [parentData]);
+
+  if (loading) {
+    return (
+      <div className="container">
+        <div className="school-header">
+          <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
+          <p>Parent Portal</p>
+        </div>
+        <div className="loading-container">
+          <i className="fas fa-spinner fa-spin"></i>
+          <p>Inapakia taarifa za mwanafunzi...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container">
+        <div className="school-header">
+          <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
+          <p>Parent Portal</p>
+          <button onClick={onLogout} className="logout-btn">
+            <i className="fas fa-sign-out-alt"></i> TOKA
+          </button>
+        </div>
+        <div className="error-container">
+          <i className="fas fa-exclamation-triangle"></i>
+          <p>Kuna tatizo: {error}</p>
+          <button onClick={onLogout} className="btn btn-primary">Jaribu tena</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!student) {
+    return (
+      <div className="container">
+        <div className="school-header">
+          <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
+          <p>Parent Portal</p>
+          <button onClick={onLogout} className="logout-btn">
+            <i className="fas fa-sign-out-alt"></i> TOKA
+          </button>
+        </div>
+        <div className="error-container">
+          <p>Hakuna taarifa za mwanafunzi</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
@@ -165,38 +229,33 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
         <p>Parent Portal - Karibu {parentData.parentname}</p>
         <button onClick={onLogout} className="logout-btn">
-          <i className="fas fa-sign-out-alt"></i> TONDA MFUMO
+          <i className="fas fa-sign-out-alt"></i> TOKA MFUMO
         </button>
       </div>
 
       <div className="parent-dashboard">
         <div className="student-info-card">
-          {results?.photo && <img src={results.photo} alt="Student" className="student-photo-large" />}
-          <h2>{results?.fullName || 'Loading...'}</h2>
-          <p><strong>📚 Kozi:</strong> {results?.course}</p>
-          <p><strong>🎂 Umri:</strong> {results?.age} years</p>
-          <p><strong>👤 Jinsia:</strong> {results?.gender}</p>
-          <p><strong>📞 Simu:</strong> {results?.phone || 'Hajajazwa'}</p>
-          <p><strong>📧 Email:</strong> {results?.email || 'Hajajazwa'}</p>
+          {student.photo && <img src={student.photo} alt="Student" className="student-photo-large" />}
+          <h2>{student.fullName}</h2>
+          <p><strong>📚 Kozi:</strong> {student.course}</p>
+          <p><strong>🎂 Umri:</strong> {student.age} years</p>
+          <p><strong>👤 Jinsia:</strong> {student.gender === 'MALE' ? 'Mwanaume' : 'Mwanamke'}</p>
+          <p><strong>📞 Simu:</strong> {student.phone || 'Hajajazwa'}</p>
+          <p><strong>📧 Email:</strong> {student.email || 'Hajajazwa'}</p>
         </div>
         
         <div className="results-card">
           <h3><i className="fas fa-chart-line"></i> Matokeo ya Mitihani</h3>
-          {loading ? (
-            <p>Inapakia...</p>
-          ) : (
-            <div className="results-placeholder">
-              <i className="fas fa-file-alt"></i>
-              <p>Matokeo yataonekana hapa baada ya kuchapishwa na mwalimu.</p>
-              <small>Taarifa za matokeo zitawasiliana nawe kupitia email au SMS.</small>
-            </div>
-          )}
+          <div className="results-placeholder">
+            <i className="fas fa-file-alt"></i>
+            <p>Matokeo yataonekana hapa baada ya kuchapishwa na mwalimu.</p>
+            <small>Taarifa za matokeo zitawasiliana nawe kupitia email au SMS.</small>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
 // ============ MAIN APP COMPONENT ============
 function App() {
   // ============ STATE ZA LOGIN ============

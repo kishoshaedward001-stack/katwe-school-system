@@ -1719,3 +1719,24 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 }
+.loading-container, .error-container {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 20px;
+  margin-top: 2rem;
+}
+
+.loading-container i, .error-container i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.loading-container i {
+  color: #667eea;
+}
+
+.error-container i {
+  color: #f5576c;
+}
