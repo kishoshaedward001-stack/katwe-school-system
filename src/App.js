@@ -498,39 +498,36 @@ function App() {
   // ============ MAIN DASHBOARD ============
   return (
     <div className="container">
-        <div className="school-header">
-  {/* Scrolling Text Banner */}
-  <div className="scrolling-banner">
-    <div className="scrolling-text">
-  <span className="color-word">🔥 HELLO! 🔥</span>
-  <span className="color-word">✨ WELCOME TO KATWE SECONDARY SCHOOL ✨</span>
-  <span className="color-word">📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚</span>
-  <span className="color-word">🎓 ENJOY OUR WEBSITE! 🎓</span>
-  <span className="color-word">💪 KARIBU SANA! 💪</span>
-  <span className="color-word">📊 MODAL YA MATOKEO 📊</span>
-  <span className="color-word">🎯 BEST STUDENT MANAGEMENT SYSTEM 🎯</span>
-  <span className="color-word">⭐ RATE US 5 STARS! ⭐</span>
-  <span className="color-word">📞 CALL US: +255 XXX XXX 📞</span>
-  <span className="color-word">✉️ EMAIL: info@katwe.edu ✉️</span>
-</div>
-  
-  {/* Rest of your header content */}
-  <div className="user-info">
-    {/* ... existing code ... */}
-  </div>
-  <h1>...</h1>
-  <p>...</p>
-  {/* ... rest ... */}
-</div>
+      <div className="school-header">
+        {/* Scrolling Text Banner */}
+        {/* MARQUEE - WEKA HAPA KWANZA KABISA */}
+        <marquee 
+          behavior="scroll" 
+          direction="left" 
+          scrollamount="4"
+          style={{
+            background: 'linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00cc00, #0099ff, #6600cc, #ff00ff)',
+            padding: '12px',
+            borderRadius: '50px',
+            marginBottom: '15px',
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: '1rem'
+          }}
+        >
+          🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |  💪 KARIBU SANA! 💪  |  📊 MODAL YA MATOKEO 📊  |  🎯 BEST STUDENT MANAGEMENT SYSTEM 🎯  |  ⭐ RATE US 5 STARS! ⭐  |  📞 CALL US: +255 XXX XXX 📞  |  ✉️ EMAIL: info@katwe.edu ✉️
+        </marquee>
+
         <div className="user-info">
           <i className={userRole === 'admin' ? 'fas fa-user-shield' : 'fas fa-user'}></i>
           <span>
-            <strong>{userName}</strong> 
+            <strong>{userName}</strong>
             <small>({userRole === 'admin' ? 'Administrator' : 'Regular User'})</small>
           </span>
-            <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
-        <p>STUDENT ANALYTICS & MANAGEMENT HUB & MATOKEO</p>
-        
+          <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
+          <p>STUDENT ANALYTICS & MANAGEMENT HUB & MATOKEO</p>
+        </div>
+
         <div className="toggle-buttons">
           <button 
             className={`toggle-btn ${showDashboard ? 'active' : ''}`}
@@ -545,12 +542,11 @@ function App() {
             <i className="fas fa-users"></i> Wanafunzi
           </button>
         </div>
-        
+
         <button onClick={handleLogout} className="logout-btn">
           <i className="fas fa-sign-out-alt"></i> TOKA MFUMO
         </button>
       </div>
-    </div>
 
       {showDashboard ? (
         <StatisticsDashboard students={students} />
