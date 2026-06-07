@@ -146,7 +146,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -290,6 +290,7 @@ function App() {
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [showParentLogin, setShowParentLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   // ============ REGISTRATION STATE ============
   const [registerData, setRegisterData] = useState({
@@ -355,17 +356,20 @@ function App() {
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/students`);
-      if (!response.ok) throw new Error('Failed to fetch');
-      const data = await response.json();
-      setStudents(data);
+        const response = await fetch(`${API_URL}/students`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        setStudents(data);
     } catch (error) {
-      console.error('Error fetching students:', error);
+        console.error('Error fetching students:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  }, [API_URL]);
-
+}, [API_URL]);
   useEffect(() => {
     if (isLoggedIn) {
       fetchStudents();
@@ -388,31 +392,32 @@ function App() {
     setLoginError('');
   };
 
-  const handleLogin = (e) => {
+ const handleLogin = async (e) => {
     e.preventDefault();
     const { username, password } = loginForm;
     
-    if (!selectedRole) {
-      setLoginError('Tafadhali chagua role yako kwanza!');
-      return;
+    try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            setToken(data.token);
+            setIsLoggedIn(true);
+            setUserRole(data.user.role);
+            setUserName(data.user.fullName || data.user.username);
+        } else {
+            setLoginError(data.error);
+        }
+    } catch (error) {
+        setLoginError('Login failed. Please try again.');
     }
-
-    let user = null;
-    if (selectedRole === 'admin') {
-      user = users.admin.find(u => u.username === username && u.password === password);
-    } else {
-      user = users.regular.find(u => u.username === username && u.password === password);
-    }
-
-    if (user) {
-      setIsLoggedIn(true);
-      setUserRole(user.role);
-      setUserName(user.name);
-      setLoginError('');
-    } else {
-      setLoginError('Username au password si sahihi! Jaribu tena.');
-    }
-  };
+};
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -420,6 +425,7 @@ function App() {
     setUserName('');
     setSelectedRole(null);
     setLoginForm({ username: '', password: '' });
+    localStorage.removeItem('token');
     setStudents([]);
     setShowDashboard(true);
     setShowTimetable(false);
