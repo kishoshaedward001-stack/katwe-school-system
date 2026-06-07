@@ -886,8 +886,7 @@ function App() {
           )}
           
           <div className="login-footer">
-            <p><strong>Admin:</strong> admin / admin123</p>
-            <p><strong>User:</strong> teacher / teacher123</p>
+           
             <p><strong>Parent:</strong> Ingiza code uliyopewa na shule</p>
           </div>
         </div>
