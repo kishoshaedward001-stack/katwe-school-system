@@ -860,9 +860,9 @@ function App() {
                 </button>
               </div>
               <div className="register-link">
-                <p>Don't have an account? <button onClick={() => setShowRegister(true)} className="link-btn">Register here</button></p>
-              </div>
-            </div>
+    <p>Huna akaunti? <button onClick={() => setShowRegister(true)} className="link-btn">Jisajili hapa</button></p>
+  </div>
+</div>
           ) : (
             <form onSubmit={handleLogin} className="login-form">
               <div className="role-badge">
