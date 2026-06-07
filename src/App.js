@@ -3,6 +3,7 @@ import './App.css';
 import Timetable from './components/Timetable';
 import TimetableAdmin from './components/TimetableAdmin';
 import UserManagement from './components/UserManagement';
+import Announcements from './components/Announcements';
 
 // ============ DASHBOARD COMPONENT ============
 const StatisticsDashboard = ({ students }) => {
@@ -313,6 +314,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showDashboard, setShowDashboard] = useState(true);
   const [showTimetable, setShowTimetable] = useState(false);
+  const [showAnnouncements, setShowAnnouncements] = useState(false);
   const [showTimetableAdmin, setShowTimetableAdmin] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -945,6 +947,18 @@ function App() {
                 onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(true); }}>
                 <i className="fas fa-users-cog"></i> User Management
               </button>
+              <button 
+    className={`toggle-btn ${showAnnouncements ? 'active' : ''}`}
+    onClick={() => {
+        setShowDashboard(false);
+        setShowTimetable(false);
+        setShowTimetableAdmin(false);
+        setShowUserManagement(false);
+        setShowAnnouncements(true);
+    }}
+>
+    <i className="fas fa-bullhorn"></i> Matangazo
+</button>
             </>
           )}
         </div>
@@ -952,17 +966,19 @@ function App() {
         <button onClick={handleLogout} className="logout-btn">TONDA MFUMO</button>
       </div>
 
-      {showUserManagement ? (
-        <UserManagement />
-      ) : showTimetableAdmin ? (
-        <TimetableAdmin />
-      ) : showTimetable ? (
-        <Timetable />
-      ) : showDashboard ? (
-        <StatisticsDashboard students={students} />
-      ) : (
-        <>
-          <div className="dashboard-grid">
+{showAnnouncements ? (
+  <Announcements />
+) : showUserManagement ? (
+  <UserManagement />
+) : showTimetableAdmin ? (
+  <TimetableAdmin />
+) : showTimetable ? (
+  <Timetable />
+) : showDashboard ? (
+  <StatisticsDashboard students={students} />
+) : (
+  <>
+    <div className="dashboard-grid">
             {/* FORM YA KUSAJILI WANAFUNZI */}
             <div className="card">
               <div className="card-header">
