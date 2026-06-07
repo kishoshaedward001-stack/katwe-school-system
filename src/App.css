@@ -1883,3 +1883,352 @@ textarea:focus {
   display: flex;
   gap: 1rem;
 }
+/* ============ RESPONSIVE DESIGN - KWA SIMU NA KOMPYUTA ============ */
+
+/* Tablet (iPad, 768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .school-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .toggle-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+  
+  .toggle-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Simu kubwa (iPhone Plus, 600px - 768px) */
+@media screen and (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  
+  .school-header {
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .school-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .user-info {
+    position: relative;
+    top: 0;
+    right: 0;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .logout-btn {
+    position: relative;
+    margin-top: 0.5rem;
+    display: inline-block;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+  
+  .stat-info h3 {
+    font-size: 1.5rem;
+  }
+  
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  
+  table {
+    font-size: 0.75rem;
+    min-width: 500px;
+  }
+  
+  th, td {
+    padding: 0.5rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.65rem;
+  }
+  
+  .toggle-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .toggle-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Forms */
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Modal */
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+    max-height: 90vh;
+  }
+  
+  .modal-header h2 {
+    font-size: 1rem;
+  }
+  
+  /* Parent Dashboard */
+  .parent-dashboard {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Login */
+  .login-card {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .role-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Scrolling text */
+  .scrolling-text span {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+/* Simu ndogo (iPhone SE, 375px - 600px) */
+@media screen and (max-width: 600px) {
+  body {
+    padding: 0.5rem;
+  }
+  
+  .school-header h1 {
+    font-size: 1.1rem;
+  }
+  
+  .school-header p {
+    font-size: 0.7rem;
+  }
+  
+  .stat-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .stat-icon {
+    margin-bottom: 0.5rem;
+  }
+  
+  .chart-card h4 {
+    font-size: 0.85rem;
+  }
+  
+  .course-item span:first-child {
+    width: 80px;
+    font-size: 0.7rem;
+  }
+  
+  .course-count {
+    width: 70px;
+    font-size: 0.65rem;
+  }
+  
+  .age-item span:first-child {
+    width: 60px;
+    font-size: 0.7rem;
+  }
+  
+  .recent-item span strong {
+    font-size: 0.8rem;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .modal-footer button {
+    width: 100%;
+  }
+  
+  .send-methods {
+    flex-direction: column;
+  }
+  
+  .send-option {
+    width: 100%;
+  }
+}
+
+/* Simu ndogo sana (320px) */
+@media screen and (max-width: 375px) {
+  .stat-info h3 {
+    font-size: 1.2rem;
+  }
+  
+  .stat-info p {
+    font-size: 0.7rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.7rem;
+  }
+  
+  .scrolling-text span {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+  }
+  
+  .login-header h1 {
+    font-size: 1.2rem;
+  }
+  
+  .login-header p {
+    font-size: 0.7rem;
+  }
+}
+
+/* Landscape mode (simu inapogeuka) */
+@media screen and (max-width: 900px) and (orientation: landscape) {
+  .school-header {
+    padding: 0.5rem;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .modal-content {
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+}
+
+/* Tablets (portrait) */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop kubwa (4K) */
+@media screen and (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+  }
+  
+  body {
+    font-size: 1.1rem;
+  }
+  
+  .stat-info h3 {
+    font-size: 2.5rem;
+  }
+}
+
+/* Print styles (ukichapisha) */
+@media print {
+  .logout-btn,
+  .toggle-buttons,
+  .marquee,
+  .scrolling-banner,
+  .btn,
+  .action-buttons {
+    display: none !important;
+  }
+  
+  .card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  body {
+    background: white;
+    padding: 0;
+  }
+}
+
+/* Touch-friendly buttons (kwa simu) */
+@media (hover: none) and (pointer: coarse) {
+  button, 
+  .btn,
+  .toggle-btn,
+  .class-btn,
+  .role-btn {
+    min-height: 44px;
+    cursor: pointer;
+  }
+  
+  input, select, textarea {
+    font-size: 16px !important; /* Kuzuia zoom kwenye iOS */
+  }
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease;
+}
+
+/* Better touch scrolling */
+.table-wrapper {
+  -webkit-overflow-scrolling: touch;
+}

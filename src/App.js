@@ -340,8 +340,8 @@ function App() {
 
   // ============ USER CREDENTIALS (for admin only) ============
   const users = {
-    admin: [{ username: 'admin', password: 'admin123', role: 'admin', name: 'Admin Mkuu' }],
-    regular: [{ username: 'teacher', password: 'teacher123', role: 'user', name: 'Mwalimu Juma' }]
+    admin: [{ username: 'admin', password: 'admin123', role: 'admin', name: 'welcome admin' }],
+    regular: [{ username: '', password: '', role: 'user', name: '' }]
   };
 
   // ============ PERMISSIONS ============
@@ -812,7 +812,7 @@ function App() {
             <button type="submit" className="btn-login">INGIA</button>
           </form>
           <div className="login-footer">
-            <p>Huna code? Wasiliana na shule kwa msaada.</p>
+            <p>Huna code? Wasiliana na shule kwa msaada kwa maelezo zaidi </p>
             <button onClick={() => setShowParentLogin(false)} className="btn-outline">Rudi kwa Login ya Shule</button>
           </div>
         </div>
@@ -910,7 +910,7 @@ function App() {
           fontSize: '1rem'
         }}
       >
-        🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |  💪 KARIBU SANA! 💪
+        🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |   KARIBU SANA! 
       </marquee>
       
       <div className="school-header">
@@ -919,7 +919,7 @@ function App() {
           <span><strong>{userName}</strong><small>({userRole === 'admin' ? 'Administrator' : 'Regular User'})</small></span>
         </div>
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
-        <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
+        <p>STUDENT ANALYTICS & MANAGEMENT HUB & MODAL YA MATOKEO</p>
         
         <div className="toggle-buttons">
           <button className={`toggle-btn ${showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement ? 'active' : ''}`} 
