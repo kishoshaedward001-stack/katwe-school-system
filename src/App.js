@@ -339,7 +339,6 @@ function App() {
 
   // ============ API BASE URL ============
   const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
-
   // ============ USER CREDENTIALS (for admin only) ============
   const users = {
     admin: [{ username: 'admin', password: 'admin123', role: 'admin', name: 'Admin Mkuu' }],
