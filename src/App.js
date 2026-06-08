@@ -586,107 +586,71 @@ function App() {
 
   const handleSendResults = async () => {
     if (!resultsData.subject1 || !resultsData.grade1) {
-      alert('Tafadhali jaza angalau somo moja na daraja lake!');
-      return;
+        alert('Tafadhali jaza angalau somo moja na daraja lake!');
+        return;
     }
     
     if (!resultsData.sendMethod) {
-      alert('Chagua njia ya kutuma (Email au SMS)!');
-      return;
+        alert('Chagua njia ya kutuma (Email au SMS)!');
+        return;
     }
 
     setSendingStatus('processing');
     
+    // Calculate average and division
+    const points = { 'A': 4.0, 'B+': 3.5, 'B': 3.0, 'C+': 2.5, 'C': 2.0, 'D': 1.0, 'F': 0.0 };
+    const gradesList = [resultsData.grade1, resultsData.grade2, resultsData.grade3, resultsData.grade4];
+    let total = 0, count = 0;
+    gradesList.forEach(g => { if (g && g !== '') { total += points[g] || 0; count++; } });
+    const average = count > 0 ? (total / count).toFixed(2) : 0;
+    const division = average >= 3.5 ? 'I' : average >= 2.5 ? 'II' : average >= 1.5 ? 'III' : 'IV';
+    
     try {
-      // Save results to database first
-      const saveResponse = await fetch(`${API_URL}/results`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studentId: selectedStudent.id,
-          subject1: resultsData.subject1,
-          grade1: resultsData.grade1,
-          subject2: resultsData.subject2,
-          grade2: resultsData.grade2,
-          subject3: resultsData.subject3,
-          grade3: resultsData.grade3,
-          subject4: resultsData.subject4,
-          grade4: resultsData.grade4,
-          remarks: resultsData.remarks,
-          term: 'Term 1',
-          year: new Date().getFullYear()
-        })
-      });
-      
-      const saveData = await saveResponse.json();
-      
-      if (!saveData.success) {
-        alert('❌ Imeshindwa kuhifadhi matokeo!');
-        setSendingStatus('');
-        return;
-      }
-      
-      // Then send via email or SMS
-      if (resultsData.sendMethod === 'email') {
-        if (!selectedStudent.email) {
-          alert('Mwanafunzi hana anuani ya email!');
-          setSendingStatus('');
-          return;
-        }
-        
-        const emailResponse = await fetch(`${API_URL}/send-results`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            student: selectedStudent,
-            results: resultsData
-          })
+        const saveResponse = await fetch(`${API_URL}/results`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                studentId: selectedStudent.id,
+                subject1: resultsData.subject1, grade1: resultsData.grade1,
+                subject2: resultsData.subject2, grade2: resultsData.grade2,
+                subject3: resultsData.subject3, grade3: resultsData.grade3,
+                subject4: resultsData.subject4, grade4: resultsData.grade4,
+                remarks: resultsData.remarks, term: 'Term 1', year: new Date().getFullYear()
+            })
         });
         
-        const emailData = await emailResponse.json();
+        const saveData = await saveResponse.json();
+        if (!saveData.success) { alert('❌ Imeshindwa kuhifadhi matokeo!'); setSendingStatus(''); return; }
         
-        if (emailData.success) {
-          alert(`✅ Matokeo yamehifadhiwa na kutumwa kwa email!`);
-          setShowModal(false);
-          fetchStudents();
-        } else {
-          alert('⚠️ Matokeo yamehifadhiwa lakini imeshindwa kutuma email!');
+        alert(`📊 Matokeo yamehifadhiwa!\n\n📈 Average: ${average}\n🏆 Division: ${division}`);
+        
+        if (resultsData.sendMethod === 'email') {
+            if (!selectedStudent.email) { alert('Mwanafunzi hana email!'); setSendingStatus(''); return; }
+            const emailResponse = await fetch(`${API_URL}/send-results`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student: selectedStudent, results: resultsData })
+            });
+            if ((await emailResponse.json()).success) alert('✅ Matokeo yametumwa kwa email!');
+            else alert('⚠️ Matokeo yamehifadhiwa lakini email haikutumwa!');
+        } 
+        else if (resultsData.sendMethod === 'sms') {
+            if (!selectedStudent.phone) { alert('Mwanafunzi hana namba!'); setSendingStatus(''); return; }
+            const smsResponse = await fetch(`${API_URL}/send-sms`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student: selectedStudent, results: resultsData })
+            });
+            if ((await smsResponse.json()).success) alert('✅ Matokeo yametumwa kwa SMS!');
+            else alert('⚠️ Matokeo yamehifadhiwa lakini SMS haikutumwa!');
         }
-      } 
-      else if (resultsData.sendMethod === 'sms') {
-        if (!selectedStudent.phone) {
-          alert('Mwanafunzi hana namba ya simu!');
-          setSendingStatus('');
-          return;
-        }
         
-        const smsResponse = await fetch(`${API_URL}/send-sms`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            student: selectedStudent,
-            results: resultsData
-          })
-        });
-        
-        const smsData = await smsResponse.json();
-        
-        if (smsData.success) {
-          alert(`✅ Matokeo yamehifadhiwa na kutumwa kwa SMS!`);
-          setShowModal(false);
-          fetchStudents();
-        } else {
-          alert('⚠️ Matokeo yamehifadhiwa lakini imeshindwa kutuma SMS!');
-        }
-      }
+        setShowModal(false);
+        fetchStudents();
     } catch (error) {
-      console.error('Send error:', error);
-      alert('❌ Kuna tatizo, jaribu tena!');
+        alert('❌ Kuna tatizo, jaribu tena!');
     } finally {
-      setSendingStatus('');
+        setSendingStatus('');
     }
-  };
-
+};
   // ============ FILTER STUDENTS ============
   const filteredStudents = students.filter(s =>
     s.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
