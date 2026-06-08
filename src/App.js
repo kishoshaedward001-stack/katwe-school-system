@@ -525,6 +525,30 @@ function App() {
       }
     }
   };
+// Download student report
+const downloadStudentReport = async (studentId) => {
+    try {
+        window.open(`${API_URL}/report/student/${studentId}`, '_blank');
+    } catch (error) {
+        alert('❌ Imeshindwa kupakua ripoti');
+    }
+};
+
+const downloadAllStudentsReport = async () => {
+    try {
+        window.open(`${API_URL}/report/all-students`, '_blank');
+    } catch (error) {
+        alert('❌ Imeshindwa kupakua ripoti');
+    }
+};
+
+const downloadClassReport = async (className) => {
+    try {
+        window.open(`${API_URL}/report/class/${encodeURIComponent(className)}`, '_blank');
+    } catch (error) {
+        alert('❌ Imeshindwa kupakua ripoti');
+    }
+};
 
   // ============ PARENT CODE GENERATION ============
   const generateParentCode = async (student) => {
@@ -968,7 +992,7 @@ function App() {
           )}
         </div>
         
-        <button onClick={handleLogout} className="logout-btn">TONDA MFUMO</button>
+        <button onClick={handleLogout} className="logout-btn">TOKA MFUMO</button>
       </div>
 
 {showAnnouncements ? (

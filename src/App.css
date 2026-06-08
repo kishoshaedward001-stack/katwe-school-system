@@ -2443,3 +2443,18 @@ textarea:focus {
     margin-bottom: 0.5rem;
     display: block;
 }
+/* PDF Buttons */
+.download-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background: #138496;
+}
