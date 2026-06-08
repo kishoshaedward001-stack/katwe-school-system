@@ -146,7 +146,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
- const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5003/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -290,7 +290,6 @@ function App() {
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [showParentLogin, setShowParentLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem('token'));
 
   // ============ REGISTRATION STATE ============
   const [registerData, setRegisterData] = useState({
@@ -315,9 +314,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showDashboard, setShowDashboard] = useState(true);
   const [showTimetable, setShowTimetable] = useState(false);
-  const [showAnnouncements, setShowAnnouncements] = useState(false);
   const [showTimetableAdmin, setShowTimetableAdmin] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
+  const [showAnnouncements, setShowAnnouncements] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [formData, setFormData] = useState({ 
     fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: ''
@@ -343,8 +342,8 @@ function App() {
 
   // ============ USER CREDENTIALS (for admin only) ============
   const users = {
-    admin: [{ username: 'admin', password: 'admin123', role: 'admin', name: 'welcome admin' }],
-    regular: [{ username: '', password: '', role: 'user', name: '' }]
+    admin: [{ username: 'admin', password: 'admin123', role: 'admin', name: 'Admin Mkuu' }],
+    regular: [{ username: 'teacher', password: 'teacher123', role: 'user', name: 'Mwalimu Juma' }]
   };
 
   // ============ PERMISSIONS ============
@@ -356,20 +355,17 @@ function App() {
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
-        const response = await fetch(`${API_URL}/students`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-        if (!response.ok) throw new Error('Failed to fetch');
-        const data = await response.json();
-        setStudents(data);
+      const response = await fetch(`${API_URL}/students`);
+      if (!response.ok) throw new Error('Failed to fetch');
+      const data = await response.json();
+      setStudents(data);
     } catch (error) {
-        console.error('Error fetching students:', error);
+      console.error('Error fetching students:', error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-}, [API_URL]);
+  }, [API_URL]);
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchStudents();
@@ -379,6 +375,19 @@ function App() {
   useEffect(() => {
     document.title = 'Katwe Secondary School | Student Management System';
   }, []);
+
+  // ============ PDF REPORT FUNCTIONS ============
+  const downloadStudentReport = (studentId) => {
+    window.open(`${API_URL}/report/student/${studentId}`, '_blank');
+  };
+
+  const downloadAllStudentsReport = () => {
+    window.open(`${API_URL}/report/all-students`, '_blank');
+  };
+
+  const downloadClassReport = (className) => {
+    window.open(`${API_URL}/report/class/${encodeURIComponent(className)}`, '_blank');
+  };
 
   // ============ LOGIN FUNCTIONS ============
   const handleRoleSelect = (role) => {
@@ -392,32 +401,31 @@ function App() {
     setLoginError('');
   };
 
- const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     const { username, password } = loginForm;
     
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        const data = await response.json();
-        
-        if (data.success) {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            setToken(data.token);
-            setIsLoggedIn(true);
-            setUserRole(data.user.role);
-            setUserName(data.user.fullName || data.user.username);
-        } else {
-            setLoginError(data.error);
-        }
-    } catch (error) {
-        setLoginError('Login failed. Please try again.');
+    if (!selectedRole) {
+      setLoginError('Tafadhali chagua role yako kwanza!');
+      return;
     }
-};
+
+    let user = null;
+    if (selectedRole === 'admin') {
+      user = users.admin.find(u => u.username === username && u.password === password);
+    } else {
+      user = users.regular.find(u => u.username === username && u.password === password);
+    }
+
+    if (user) {
+      setIsLoggedIn(true);
+      setUserRole(user.role);
+      setUserName(user.name);
+      setLoginError('');
+    } else {
+      setLoginError('Username au password si sahihi! Jaribu tena.');
+    }
+  };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -425,12 +433,12 @@ function App() {
     setUserName('');
     setSelectedRole(null);
     setLoginForm({ username: '', password: '' });
-    localStorage.removeItem('token');
     setStudents([]);
     setShowDashboard(true);
     setShowTimetable(false);
     setShowTimetableAdmin(false);
     setShowUserManagement(false);
+    setShowAnnouncements(false);
   };
 
   // ============ PHOTO UPLOAD ============
@@ -525,30 +533,6 @@ function App() {
       }
     }
   };
-// Download student report
-const downloadStudentReport = async (studentId) => {
-    try {
-        window.open(`${API_URL}/report/student/${studentId}`, '_blank');
-    } catch (error) {
-        alert('❌ Imeshindwa kupakua ripoti');
-    }
-};
-
-const downloadAllStudentsReport = async () => {
-    try {
-        window.open(`${API_URL}/report/all-students`, '_blank');
-    } catch (error) {
-        alert('❌ Imeshindwa kupakua ripoti');
-    }
-};
-
-const downloadClassReport = async (className) => {
-    try {
-        window.open(`${API_URL}/report/class/${encodeURIComponent(className)}`, '_blank');
-    } catch (error) {
-        alert('❌ Imeshindwa kupakua ripoti');
-    }
-};
 
   // ============ PARENT CODE GENERATION ============
   const generateParentCode = async (student) => {
@@ -844,7 +828,7 @@ const downloadClassReport = async (className) => {
             <button type="submit" className="btn-login">INGIA</button>
           </form>
           <div className="login-footer">
-            <p>Huna code? Wasiliana na shule kwa msaada kwa maelezo zaidi </p>
+            <p>Huna code? Wasiliana na shule kwa msaada.</p>
             <button onClick={() => setShowParentLogin(false)} className="btn-outline">Rudi kwa Login ya Shule</button>
           </div>
         </div>
@@ -890,9 +874,9 @@ const downloadClassReport = async (className) => {
                 </button>
               </div>
               <div className="register-link">
-    <p>Huna akaunti? <button onClick={() => setShowRegister(true)} className="link-btn">Jisajili hapa</button></p>
-  </div>
-</div>
+                <p>Huna akaunti? <button onClick={() => setShowRegister(true)} className="link-btn">Jisajili hapa</button></p>
+              </div>
+            </div>
           ) : (
             <form onSubmit={handleLogin} className="login-form">
               <div className="role-badge">
@@ -916,7 +900,8 @@ const downloadClassReport = async (className) => {
           )}
           
           <div className="login-footer">
-           
+            <p><strong>Admin:</strong> admin / admin123</p>
+            <p><strong>User:</strong> teacher / teacher123</p>
             <p><strong>Parent:</strong> Ingiza code uliyopewa na shule</p>
           </div>
         </div>
@@ -941,7 +926,7 @@ const downloadClassReport = async (className) => {
           fontSize: '1rem'
         }}
       >
-        🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |   KARIBU SANA! 
+         HELLO!  |  WELCOME TO KATWE SECONDARY SCHOOL  |   STUDENT ANALYTICS & MANAGEMENT HUB |   ENJOY OUR WEBSITE!  |   KARIBU SANA!   |   CALL US: +255 614910462& 0799119250  |  EMAIL: info@katwe.com
       </marquee>
       
       <div className="school-header">
@@ -950,64 +935,56 @@ const downloadClassReport = async (className) => {
           <span><strong>{userName}</strong><small>({userRole === 'admin' ? 'Administrator' : 'Regular User'})</small></span>
         </div>
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
-        <p>STUDENT ANALYTICS & MANAGEMENT HUB & MODAL YA MATOKEO</p>
+        <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
         
         <div className="toggle-buttons">
-          <button className={`toggle-btn ${showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement ? 'active' : ''}`} 
-            onClick={() => { setShowDashboard(true); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); }}>
+          <button className={`toggle-btn ${showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement && !showAnnouncements ? 'active' : ''}`} 
+            onClick={() => { setShowDashboard(true); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
             <i className="fas fa-chart-line"></i> Dashboard
           </button>
-          <button className={`toggle-btn ${!showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement ? 'active' : ''}`} 
-            onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); }}>
+          <button className={`toggle-btn ${!showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement && !showAnnouncements ? 'active' : ''}`} 
+            onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
             <i className="fas fa-users"></i> Wanafunzi
           </button>
           <button className={`toggle-btn ${showTimetable ? 'active' : ''}`} 
-            onClick={() => { setShowDashboard(false); setShowTimetable(true); setShowTimetableAdmin(false); setShowUserManagement(false); }}>
+            onClick={() => { setShowDashboard(false); setShowTimetable(true); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
             <i className="fas fa-calendar-alt"></i> Timetable
           </button>
           
           {userRole === 'admin' && (
             <>
               <button className={`toggle-btn ${showTimetableAdmin ? 'active' : ''}`} 
-                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(true); setShowUserManagement(false); }}>
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(true); setShowUserManagement(false); setShowAnnouncements(false); }}>
                 <i className="fas fa-cog"></i> Timetable Admin
               </button>
               <button className={`toggle-btn ${showUserManagement ? 'active' : ''}`} 
-                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(true); }}>
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(true); setShowAnnouncements(false); }}>
                 <i className="fas fa-users-cog"></i> User Management
               </button>
-              <button 
-    className={`toggle-btn ${showAnnouncements ? 'active' : ''}`}
-    onClick={() => {
-        setShowDashboard(false);
-        setShowTimetable(false);
-        setShowTimetableAdmin(false);
-        setShowUserManagement(false);
-        setShowAnnouncements(true);
-    }}
->
-    <i className="fas fa-bullhorn"></i> Matangazo
-</button>
+              <button className={`toggle-btn ${showAnnouncements ? 'active' : ''}`} 
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(true); }}>
+                <i className="fas fa-bullhorn"></i> Matangazo
+              </button>
             </>
           )}
         </div>
         
-        <button onClick={handleLogout} className="logout-btn">TOKA MFUMO</button>
+        <button onClick={handleLogout} className="logout-btn">TONDA MFUMO</button>
       </div>
 
-{showAnnouncements ? (
-  <Announcements />
-) : showUserManagement ? (
-  <UserManagement />
-) : showTimetableAdmin ? (
-  <TimetableAdmin />
-) : showTimetable ? (
-  <Timetable />
-) : showDashboard ? (
-  <StatisticsDashboard students={students} />
-) : (
-  <>
-    <div className="dashboard-grid">
+      {showAnnouncements ? (
+        <Announcements />
+      ) : showUserManagement ? (
+        <UserManagement />
+      ) : showTimetableAdmin ? (
+        <TimetableAdmin />
+      ) : showTimetable ? (
+        <Timetable />
+      ) : showDashboard ? (
+        <StatisticsDashboard students={students} />
+      ) : (
+        <>
+          <div className="dashboard-grid">
             {/* FORM YA KUSAJILI WANAFUNZI */}
             <div className="card">
               <div className="card-header">
@@ -1107,6 +1084,7 @@ const downloadClassReport = async (className) => {
                             <td>{student.email || '—'}</td>
                             <td className="action-buttons">
                               <button className="btn btn-sm btn-primary" onClick={() => openResultsModal(student)}><i className="fas fa-chart-line"></i> Matokeo</button>
+                              <button className="btn btn-sm btn-info" onClick={() => downloadStudentReport(student.id)}><i className="fas fa-file-pdf"></i> PDF</button>
                               {canEdit && <button className="btn btn-sm btn-outline" onClick={() => handleEdit(student)}><i className="fas fa-edit"></i> Edit</button>}
                               {canDelete && <button className="btn btn-sm btn-danger" onClick={() => handleDelete(student.id)}><i className="fas fa-trash-alt"></i> Futa</button>}
                               {canEdit && <button className="btn btn-sm btn-success" onClick={() => generateParentCode(student)}><i className="fas fa-users"></i> Parent Code</button>}
@@ -1119,8 +1097,18 @@ const downloadClassReport = async (className) => {
                 </div>
                 <hr />
                 <div className="download-area">
-                  <span><i className="fas fa-download"></i> <strong>PAKUA RIPOTI</strong> (CSV)</span>
-                  <button onClick={downloadCSV} className="btn btn-outline btn-sm"><i className="fas fa-file-csv"></i> Pakua Orodha Kamili</button>
+                  <span><i className="fas fa-download"></i> <strong>PAKUA RIPOTI</strong></span>
+                  <div className="download-buttons">
+                    <button onClick={downloadCSV} className="btn btn-outline btn-sm">
+                      <i className="fas fa-file-csv"></i> CSV
+                    </button>
+                    <button onClick={downloadAllStudentsReport} className="btn btn-outline btn-sm">
+                      <i className="fas fa-file-pdf"></i> Wanafunzi Wote PDF
+                    </button>
+                    <button onClick={() => downloadClassReport('Form 1')} className="btn btn-outline btn-sm">
+                      <i className="fas fa-file-pdf"></i> Ripoti ya Darasa PDF
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1142,8 +1130,8 @@ const downloadClassReport = async (className) => {
                         <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} />
                         <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange}>
                           <option value="">Daraja</option>
-                          <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                          <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
+                          <option value="A">A</option><option value="B">B</option>
+                          <option value="C">C</option><option value="D">D</option><option value="F">F</option>
                         </select>
                       </div>
                     </div>
