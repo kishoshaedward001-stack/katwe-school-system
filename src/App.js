@@ -146,7 +146,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002/api';
+ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5003/api';
 
   useEffect(() => {
     const fetchData = async () => {

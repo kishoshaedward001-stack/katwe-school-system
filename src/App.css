@@ -2275,3 +2275,171 @@ textarea:focus {
   color: #64748b;
   margin-bottom: 1rem;
 }
+/* Announcements Styles */
+.announcements-container {
+    padding: 1rem;
+}
+
+.announcements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.announcements-header h2 {
+    color: #1e3c72;
+    font-size: 1.3rem;
+}
+
+.announcements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.announcement-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.announcement-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.announcement-card.priority-high {
+    border-left: 5px solid #dc2626;
+}
+
+.announcement-card.priority-medium {
+    border-left: 5px solid #f59e0b;
+}
+
+.announcement-card.priority-low {
+    border-left: 5px solid #10b981;
+}
+
+.announcement-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.announcement-content {
+    padding: 1rem;
+}
+
+.announcement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.announcement-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.priority-badge {
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.announcement-title h3 {
+    margin: 0;
+    color: #1e293b;
+}
+
+.announcement-content p {
+    color: #475569;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.announcement-footer {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 0.8rem;
+}
+
+.announcement-footer span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.announcement-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-edit, .btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.3rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    color: #3b82f6;
+}
+
+.btn-edit:hover {
+    background: #eff6ff;
+}
+
+.btn-delete {
+    color: #ef4444;
+}
+
+.btn-delete:hover {
+    background: #fef2f2;
+}
+
+.image-preview {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.image-preview img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.no-announcements {
+    text-align: center;
+    padding: 3rem;
+    background: #f8fafc;
+    border-radius: 16px;
+    color: #94a3b8;
+}
+
+.no-announcements i {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
