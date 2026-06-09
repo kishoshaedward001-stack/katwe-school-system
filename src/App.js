@@ -107,7 +107,7 @@ const StatisticsDashboard = ({ students }) => {
                 <div className="course-bar-container">
                   <div className="course-bar" style={{ width: `${totalStudents ? (count / totalStudents) * 100 : 0}%` }}></div>
                 </div>
-                <span className="course-count">{count} wanafunzi</span>
+                <span className="course-count">{count} students</span>
               </div>
             ))}
         </div>
@@ -203,7 +203,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="school-header">
           <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
           <p>Parent Portal</p>
-          <button onClick={onLogout} className="logout-btn">TONDA</button>
+          <button onClick={onLogout} className="logout-btn">LOG OUT</button>
         </div>
         <div className="error-container">
           <i className="fas fa-exclamation-triangle"></i>
@@ -220,7 +220,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="school-header">
           <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
           <p>Parent Portal</p>
-          <button onClick={onLogout} className="logout-btn">TONDA</button>
+          <button onClick={onLogout} className="logout-btn">LOG OUT</button>
         </div>
         <div className="error-container">
           <p>No student information available</p>
@@ -234,18 +234,18 @@ const ParentDashboard = ({ parentData, onLogout }) => {
       <div className="school-header">
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
         <p>Parent Portal - Karibu {parentData.parentname}</p>
-        <button onClick={onLogout} className="logout-btn">TONDA MFUMO</button>
+        <button onClick={onLogout} className="logout-btn">LOG OUT</button>
       </div>
 
       <div className="parent-dashboard">
         <div className="student-info-card">
           {student.photo && <img src={student.photo} alt="Student" className="student-photo-large" />}
           <h2>{student.fullName}</h2>
-          <p><strong>📚 Kozi:</strong> {student.course}</p>
-          <p><strong>🎂 Umri:</strong> {student.age} years</p>
-          <p><strong>👤 Jinsia:</strong> {student.gender === 'MALE' ? 'Mwanaume' : 'Mwanamke'}</p>
-          <p><strong>📞 Simu:</strong> {student.phone || 'Hajajazwa'}</p>
-          <p><strong>📧 Email:</strong> {student.email || 'Hajajazwa'}</p>
+          <p><strong> course:</strong> {student.course}</p>
+          <p><strong> age:</strong> {student.age} years</p>
+          <p><strong> Gender:</strong> {student.gender === 'MALE' ? 'Male' : 'Female'}</p>
+          <p><strong> Phone:</strong> {student.phone || 'Not provided'}</p>
+          <p><strong> Email:</strong> {student.email || 'Not provided'}</p>
         </div>
         
         <div className="results-card">
@@ -351,7 +351,7 @@ const [showInstallButton, setShowInstallButton] = useState(false);
   // ============ USER CREDENTIALS (for admin only) ============
   const users = {
     admin: [{ username: 'admin', password: 'admin123', role: 'admin', name: 'Admin Mkuu' }],
-    regular: [{ username: 'teacher', password: 'teacher123', role: 'user', name: 'Mwalimu Juma' }]
+    regular: [{ username: 'teacher', password: 'teacher123', role: 'user', name: 'Mwalimu' }]
   };
 
   // ============ PERMISSIONS ============
@@ -532,7 +532,7 @@ const handleInstallClick = () => {
       setEditingId(null);
     } catch (error) {
       console.error('Error saving student:', error);
-      alert('❌ Kuna tatizo, jaribu tena!');
+      alert('❌ Failed to save student. Please try again!');
     }
   };
 
@@ -558,7 +558,7 @@ const handleInstallClick = () => {
         fetchStudents();
       } catch (error) {
         console.error('Error deleting student:', error);
-        alert('❌ Imeshindwa kufuta, jaribu tena!');
+        alert('❌ Failed to delete student. Please try again!');
       }
     }
   };
@@ -807,22 +807,22 @@ const handleInstallClick = () => {
                 setParentData(data.parent);
                 setParentLoginError('');
               } else {
-                setParentLoginError('Code si sahihi! Jaribu tena.');
+                setParentLoginError('Code is invalid.');
               }
             } catch (error) {
-              setParentLoginError('Kuna tatizo, jaribu tena!');
+              setParentLoginError('Failed to login. Please try again!');
             }
           }}>
             <div className="form-group">
               <label><i className="fas fa-key"></i> Parent Code</label>
-              <input type="text" value={parentCode} onChange={(e) => setParentCode(e.target.value)} placeholder="Weka code yako (kwa mfano: 123456)" required />
+              <input type="text" value={parentCode} onChange={(e) => setParentCode(e.target.value)} placeholder="Enter your code (e.g., 123456)" required />
             </div>
             {parentLoginError && <div className="error-message">{parentLoginError}</div>}
-            <button type="submit" className="btn-login">INGIA</button>
+            <button type="submit" className="btn-login">LOGIN</button>
           </form>
           <div className="login-footer">
-            <p>Huna code? Wasiliana na shule kwa msaada.</p>
-            <button onClick={() => setShowParentLogin(false)} className="btn-outline">Rudi kwa Login ya Shule</button>
+            <p>Don't have a code? Contact the school for assistance.</p>
+            <button onClick={() => setShowParentLogin(false)} className="btn-outline">Back to School Login</button>
           </div>
         </div>
       </div>
@@ -846,7 +846,7 @@ const handleInstallClick = () => {
           <div className="login-header">
             <i className="fas fa-graduation-cap"></i>
             <h1>KATWE SECONDARY SCHOOL</h1>
-            <p>Student Analytics & Management Hub</p>
+            <p>Student  Management system</p>
           </div>
           
           {!selectedRole ? (
@@ -893,9 +893,7 @@ const handleInstallClick = () => {
           )}
           
           <div className="login-footer">
-            <p><strong>Admin:</strong> admin / admin123</p>
-            <p><strong>User:</strong> teacher / teacher123</p>
-            <p><strong>Parent:</strong> Ingiza code uliyopewa na shule</p>
+            <p><strong>Parent:</strong> Enter the code provided by the school</p>
           </div>
         </div>
       </div>
@@ -928,7 +926,7 @@ const handleInstallClick = () => {
           <span><strong>{userName}</strong><small>({userRole === 'admin' ? 'Administrator' : 'Regular User'})</small></span>
         </div>
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
-        <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
+        <p>STUDENT  MANAGEMENT & RESULTS</p>
         
         <div className="toggle-buttons">
           <button className={`toggle-btn ${showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement && !showAnnouncements ? 'active' : ''}`} 

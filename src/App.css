@@ -20,7 +20,7 @@ body {
 
 /* Header Styles */
 .school-header {
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  background: linear-gradient(135deg, #421e72 0%, #502a98 100%);
   border-radius: 20px;
   padding: 1.5rem 2rem;
   margin-bottom: 2rem;
@@ -29,7 +29,7 @@ body {
 }
 
 .school-header h1 {
-  color: white;
+  color: rgba(255, 255, 255, 0.74);
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -1760,7 +1760,7 @@ textarea:focus {
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid #e2ecf0;
 }
 
 .result-term {
@@ -1850,7 +1850,7 @@ textarea:focus {
 }
 
 .timetable-table th {
-  background: #f1f6fe;
+  background: hwb(231 51% 31% / 0.712);
   font-weight: 600;
 }
 
