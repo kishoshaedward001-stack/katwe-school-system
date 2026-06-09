@@ -1,18 +1,48 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#1e3c72" />
     <meta name="description" content="Katwe Secondary School Student Management System" />
-    <title></title> Student Management System</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- iOS Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Katwe School" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/icons/icon-192x192.png" />
+    
+    <!-- Android Support -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <title>Katwe Secondary School | Student Management System</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => {
+              console.log('✅ Service Worker registered successfully:', reg);
+            })
+            .catch(err => {
+              console.log('❌ Service Worker registration failed:', err);
+            });
+        });
+      }
+      
+      // Check if app is installed
+      window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('📱 App can be installed');
+      });
+    </script>
   </body>
 </html>

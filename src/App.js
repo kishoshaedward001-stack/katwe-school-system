@@ -22,11 +22,14 @@ const StatisticsDashboard = ({ students }) => {
     '21-23': students.filter(s => s.age >= 21 && s.age <= 23).length,
     'Above 23': students.filter(s => s.age > 23).length
   };
-  
-  const recentStudents = [...students].reverse().slice(0, 5);
-  
+
+  const recentStudents = students.slice(-5).reverse();
+
+  const malePercent = totalStudents ? Math.round((maleCount / totalStudents) * 100) : 0;
+  const femalePercent = totalStudents ? Math.round((femaleCount / totalStudents) * 100) : 0;
+
   return (
-    <div className="dashboard-stats">
+    <div className="dashboard">
       <div className="dashboard-header">
         <h2><i className="fas fa-chart-pie"></i> Dashboard ya Takwiri</h2>
         <p>Muhtasari wa takwiri za wanafunzi wote</p>
@@ -67,11 +70,11 @@ const StatisticsDashboard = ({ students }) => {
         <div className="chart-card">
           <h4><i className="fas fa-venus-mars"></i> Wanafunzi kwa Jinsia</h4>
           <div className="gender-chart">
-            <div className="gender-bar male" style={{ width: `${(maleCount/totalStudents)*100}%` }}>
-              <span>{maleCount} Wanaume ({Math.round((maleCount/totalStudents)*100)}%)</span>
+            <div className="gender-bar male" style={{ width: `${malePercent}%` }}>
+              <span>{maleCount} Wanaume ({malePercent}%)</span>
             </div>
-            <div className="gender-bar female" style={{ width: `${(femaleCount/totalStudents)*100}%` }}>
-              <span>{femaleCount} Wanawake ({Math.round((femaleCount/totalStudents)*100)}%)</span>
+            <div className="gender-bar female" style={{ width: `${femalePercent}%` }}>
+              <span>{femaleCount} Wanawake ({femalePercent}%)</span>
             </div>
           </div>
         </div>
@@ -83,7 +86,7 @@ const StatisticsDashboard = ({ students }) => {
               <div key={group} className="age-item">
                 <span>{group}</span>
                 <div className="age-bar-container">
-                  <div className="age-bar" style={{ width: `${(count/totalStudents)*100}%` }}></div>
+                  <div className="age-bar" style={{ width: `${totalStudents ? (count / totalStudents) * 100 : 0}%` }}></div>
                 </div>
                 <span className="age-count">{count}</span>
               </div>
@@ -102,7 +105,7 @@ const StatisticsDashboard = ({ students }) => {
               <div key={course} className="course-item">
                 <span>{course}</span>
                 <div className="course-bar-container">
-                  <div className="course-bar" style={{ width: `${(count/totalStudents)*100}%` }}></div>
+                  <div className="course-bar" style={{ width: `${totalStudents ? (count / totalStudents) * 100 : 0}%` }}></div>
                 </div>
                 <span className="course-count">{count} wanafunzi</span>
               </div>
@@ -317,6 +320,9 @@ function App() {
   const [showTimetableAdmin, setShowTimetableAdmin] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [showAnnouncements, setShowAnnouncements] = useState(false);
+  // PWA Installation
+const [deferredPrompt, setDeferredPrompt] = useState(null);
+const [showInstallButton, setShowInstallButton] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [formData, setFormData] = useState({ 
     fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: ''
@@ -377,6 +383,14 @@ function App() {
   useEffect(() => {
     document.title = 'Katwe Secondary School | Student Management System';
   }, []);
+  // PWA - Listen for install prompt
+useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+        setShowInstallButton(true);
+    });
+}, []);
 
   // ============ PDF REPORT FUNCTIONS ============
   const downloadStudentReport = (studentId) => {
@@ -442,6 +456,19 @@ function App() {
     setShowUserManagement(false);
     setShowAnnouncements(false);
   };
+  // Handle PWA installation
+const handleInstallClick = () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            }
+            setDeferredPrompt(null);
+            setShowInstallButton(false);
+        });
+    }
+};
 
   // ============ PHOTO UPLOAD ============
   const handlePhotoUpload = async (e) => {
@@ -883,7 +910,7 @@ function App() {
         direction="left" 
         scrollamount="4"
         style={{
-          background: 'linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00cc00, #0099ff, #6600cc, #ff00ff)',
+          background: 'linear-gradient(90deg, #0051ff, #00ff6a, #00ffdd, #00cc00, #0099ff, #6600cc, #ff00ff)',
           padding: '12px',
           borderRadius: '50px',
           marginBottom: '15px',
@@ -934,8 +961,15 @@ function App() {
             </>
           )}
         </div>
+        <div className="header-buttons">
+        {showInstallButton && (
+            <button onClick={handleInstallClick} className="install-btn">
+                <i className="fas fa-download"></i> Sakinisha App
+            </button>
+        )}
         
         <button onClick={handleLogout} className="logout-btn">TONDA MFUMO</button>
+      </div>
       </div>
 
       {showAnnouncements ? (
@@ -1082,172 +1116,171 @@ function App() {
 
           {/* MODAL YA KUJAZA MATOKEO */}
           {showModal && selectedStudent && (
-    <div className="modal-overlay" onClick={() => setShowModal(false)}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{maxWidth: '700px', width: '90%'}}>
-            <div className="modal-header">
-                <h2><i className="fas fa-chart-line"></i> Jaza Matokeo - {selectedStudent.fullName}</h2>
-                <button className="modal-close" onClick={() => setShowModal(false)}>&times;</button>
-            </div>
-            <div className="modal-body" style={{maxHeight: '70vh', overflowY: 'auto'}}>
-                <div className="results-form">
+            <div className="modal-overlay" onClick={() => setShowModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '700px', width: '90%' }}>
+                <div className="modal-header">
+                  <h2><i className="fas fa-chart-line"></i> Jaza Matokeo - {selectedStudent.fullName}</h2>
+                  <button className="modal-close" onClick={() => setShowModal(false)}>&times;</button>
+                </div>
+                <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                  <div className="results-form">
                     <h3>Masomo 7</h3>
-                    
+
                     {/* Somo 1 */}
                     <div className="form-group">
-                        <label>Somo la 1</label>
-                        <div className="subject-row">
-                            <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} style={{flex: 2}} />
-                            <input type="number" name="score1" placeholder="Alama" value={resultsData.score1} onChange={handleResultsChange} style={{width: 80}} />
-                            <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange} style={{width: 70}}>
-                                <option value="">Grade</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="F">F</option>
-                            </select>
-                        </div>
+                      <label>Somo la 1</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score1" placeholder="Alama" value={resultsData.score1} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange} style={{ width: 70 }}>
+                          <option value="">Grade</option>
+                          <option value="A">A</option>
+                          <option value="B">B</option>
+                          <option value="C">C</option>
+                          <option value="D">D</option>
+                          <option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
-                    
+
                     {/* Somo 2 */}
                     <div className="form-group">
-                        <label>Somo la 2</label>
-                        <div className="subject-row">
-                            <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} style={{flex: 2}} />
-                            <input type="number" name="score2" placeholder="Alama" value={resultsData.score2} onChange={handleResultsChange} style={{width: 80}} />
-                            <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange} style={{width: 70}}>
-                                <option value="">Grade</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="F">F</option>
-                            </select>
-                        </div>
+                      <label>Somo la 2</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score2" placeholder="Alama" value={resultsData.score2} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange} style={{ width: 70 }}>
+                          <option value="">Grade</option>
+                          <option value="A">A</option>
+                          <option value="B">B</option>
+                          <option value="C">C</option>
+                          <option value="D">D</option>
+                          <option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
-                    
+
                     {/* Somo 3 */}
                     <div className="form-group">
-                        <label>Somo la 3</label>
-                        <div className="subject-row">
-                            <input type="text" name="subject3" placeholder="Jina la somo" value={resultsData.subject3} onChange={handleResultsChange} style={{flex: 2}} />
-                            <input type="number" name="score3" placeholder="Alama" value={resultsData.score3} onChange={handleResultsChange} style={{width: 80}} />
-                            <select name="grade3" value={resultsData.grade3} onChange={handleResultsChange} style={{width: 70}}>
-                                <option value="">Grade</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="F">F</option>
-                            </select>
-                        </div>
+                      <label>Somo la 3</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject3" placeholder="Jina la somo" value={resultsData.subject3} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score3" placeholder="Alama" value={resultsData.score3} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <select name="grade3" value={resultsData.grade3} onChange={handleResultsChange} style={{ width: 70 }}>
+                          <option value="">Grade</option>
+                          <option value="A">A</option>
+                          <option value="B">B</option>
+                          <option value="C">C</option>
+                          <option value="D">D</option>
+                          <option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
-                    
+
                     {/* Somo 4 */}
                     <div className="form-group">
-                        <label>Somo la 4</label>
-                        <div className="subject-row">
-                            <input type="text" name="subject4" placeholder="Jina la somo" value={resultsData.subject4} onChange={handleResultsChange} style={{flex: 2}} />
-                            <input type="number" name="score4" placeholder="Alama" value={resultsData.score4} onChange={handleResultsChange} style={{width: 80}} />
-                            <select name="grade4" value={resultsData.grade4} onChange={handleResultsChange} style={{width: 70}}>
-                                <option value="">Grade</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="F">F</option>
-                            </select>
-                        </div>
+                      <label>Somo la 4</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject4" placeholder="Jina la somo" value={resultsData.subject4} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score4" placeholder="Alama" value={resultsData.score4} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <select name="grade4" value={resultsData.grade4} onChange={handleResultsChange} style={{ width: 70 }}>
+                          <option value="">Grade</option>
+                          <option value="A">A</option>
+                          <option value="B">B</option>
+                          <option value="C">C</option>
+                          <option value="D">D</option>
+                          <option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
-                    
+
                     {/* Somo 5 */}
                     <div className="form-group">
-                        <label>Somo la 5</label>
-                        <div className="subject-row">
-                            <input type="text" name="subject5" placeholder="Jina la somo" value={resultsData.subject5} onChange={handleResultsChange} style={{flex: 2}} />
-                            <input type="number" name="score5" placeholder="Alama" value={resultsData.score5} onChange={handleResultsChange} style={{width: 80}} />
-                            <select name="grade5" value={resultsData.grade5} onChange={handleResultsChange} style={{width: 70}}>
-                                <option value="">Grade</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="F">F</option>
-                            </select>
-                        </div>
+                      <label>Somo la 5</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject5" placeholder="Jina la somo" value={resultsData.subject5} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score5" placeholder="Alama" value={resultsData.score5} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <select name="grade5" value={resultsData.grade5} onChange={handleResultsChange} style={{ width: 70 }}>
+                          <option value="">Grade</option>
+                          <option value="A">A</option>
+                          <option value="B">B</option>
+                          <option value="C">C</option>
+                          <option value="D">D</option>
+                          <option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
-                    
+
                     {/* Somo 6 */}
                     <div className="form-group">
-                        <label>Somo la 6</label>
-                        <div className="subject-row">
-                            <input type="text" name="subject6" placeholder="Jina la somo" value={resultsData.subject6} onChange={handleResultsChange} style={{flex: 2}} />
-                            <input type="number" name="score6" placeholder="Alama" value={resultsData.score6} onChange={handleResultsChange} style={{width: 80}} />
-                            <select name="grade6" value={resultsData.grade6} onChange={handleResultsChange} style={{width: 70}}>
-                                <option value="">Grade</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="F">F</option>
-                            </select>
-                        </div>
+                      <label>Somo la 6</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject6" placeholder="Jina la somo" value={resultsData.subject6} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score6" placeholder="Alama" value={resultsData.score6} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <select name="grade6" value={resultsData.grade6} onChange={handleResultsChange} style={{ width: 70 }}>
+                          <option value="">Grade</option>
+                          <option value="A">A</option>
+                          <option value="B">B</option>
+                          <option value="C">C</option>
+                          <option value="D">D</option>
+                          <option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
-                    
+
                     {/* Somo 7 */}
                     <div className="form-group">
-                        <label>Somo la 7</label>
-                        <div className="subject-row">
-                            <input type="text" name="subject7" placeholder="Jina la somo" value={resultsData.subject7} onChange={handleResultsChange} style={{flex: 2}} />
-                            <input type="number" name="score7" placeholder="Alama" value={resultsData.score7} onChange={handleResultsChange} style={{width: 80}} />
-                            <select name="grade7" value={resultsData.grade7} onChange={handleResultsChange} style={{width: 70}}>
-                                <option value="">Grade</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="F">F</option>
-                            </select>
-                        </div>
+                      <label>Somo la 7</label>
+                      <div className="subject-row">
+                        <input type="text" name="subject7" placeholder="Jina la somo" value={resultsData.subject7} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score7" placeholder="Alama" value={resultsData.score7} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <select name="grade7" value={resultsData.grade7} onChange={handleResultsChange} style={{ width: 70 }}>
+                          <option value="">Grade</option>
+                          <option value="A">A</option>
+                          <option value="B">B</option>
+                          <option value="C">C</option>
+                          <option value="D">D</option>
+                          <option value="F">F</option>
+                        </select>
+                      </div>
                     </div>
-                    
+
                     <div className="form-group">
-                        <label>MAONI / REMARKS</label>
-                        <textarea name="remarks" rows="3" placeholder="Maoni kuhusu mwanafunzi..." value={resultsData.remarks} onChange={handleResultsChange}></textarea>
+                      <label>MAONI / REMARKS</label>
+                      <textarea name="remarks" rows="3" placeholder="Maoni kuhusu mwanafunzi..." value={resultsData.remarks} onChange={handleResultsChange}></textarea>
                     </div>
-                    
+
                     <div className="form-group">
-                        <label>NJIA YA KUTUMA</label>
-                        <div className="send-methods">
-                            <label className="send-option">
-                                <input type="radio" name="sendMethod" value="email" onChange={handleResultsChange} />
-                                <i className="fas fa-envelope"></i> Tuma kwa Email
-                            </label>
-                            <label className="send-option">
-                                <input type="radio" name="sendMethod" value="sms" onChange={handleResultsChange} />
-                                <i className="fas fa-sms"></i> Tuma kwa SMS
-                            </label>
-                        </div>
+                      <label>NJIA YA KUTUMA</label>
+                      <div className="send-methods">
+                        <label className="send-option">
+                          <input type="radio" name="sendMethod" value="email" onChange={handleResultsChange} />
+                          <i className="fas fa-envelope"></i> Tuma kwa Email
+                        </label>
+                        <label className="send-option">
+                          <input type="radio" name="sendMethod" value="sms" onChange={handleResultsChange} />
+                          <i className="fas fa-sms"></i> Tuma kwa SMS
+                        </label>
+                      </div>
                     </div>
-                    
+
                     {sendingStatus === 'processing' && (
-                        <div className="sending-status"><i className="fas fa-spinner fa-spin"></i> Inatuma...</div>
+                      <div className="sending-status"><i className="fas fa-spinner fa-spin"></i> Inatuma...</div>
                     )}
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-outline" onClick={() => setShowModal(false)}>Funga</button>
+                  <button className="btn btn-primary" onClick={handleSendResults} disabled={sendingStatus === 'processing'}>
+                    <i className="fas fa-paper-plane"></i> Tuma Matokeo
+                  </button>
                 </div>
               </div>
-              <div className="modal-footer">
-                <button className="btn btn-outline" onClick={() => setShowModal(false)}>Funga</button>
-                <button className="btn btn-primary" onClick={handleSendResults} disabled={sendingStatus === 'processing'}>
-                  <i className="fas fa-paper-plane"></i> Tuma Matokeo
-                </button>
-              </div>
-            </div>
             </div>
           )}
         </>
-      )};
-  );
-</div>
+      )}
+    </div>
   );
 }
-      export default App;
+export default App;
