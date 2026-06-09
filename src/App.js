@@ -31,8 +31,8 @@ const StatisticsDashboard = ({ students }) => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h2><i className="fas fa-chart-pie"></i> Dashboard ya Takwiri</h2>
-        <p>Muhtasari wa takwiri za wanafunzi wote</p>
+        <h2><i className="fas fa-chart-pie"></i> Statistics</h2>
+        <p>Summary of student statistics</p>
       </div>
       
       <div className="stats-grid">
@@ -40,47 +40,47 @@ const StatisticsDashboard = ({ students }) => {
           <div className="stat-icon"><i className="fas fa-users"></i></div>
           <div className="stat-info">
             <h3>{totalStudents}</h3>
-            <p>Jumla ya Wanafunzi</p>
+            <p>Total Students</p>
           </div>
         </div>
         <div className="stat-card green">
           <div className="stat-icon"><i className="fas fa-female"></i></div>
           <div className="stat-info">
             <h3>{femaleCount}</h3>
-            <p>Wanawake</p>
+            <p>Female Students</p>
           </div>
         </div>
         <div className="stat-card orange">
           <div className="stat-icon"><i className="fas fa-male"></i></div>
           <div className="stat-info">
             <h3>{maleCount}</h3>
-            <p>Wanaume</p>
+            <p>Male Students</p>
           </div>
         </div>
         <div className="stat-card purple">
           <div className="stat-icon"><i className="fas fa-book"></i></div>
           <div className="stat-info">
             <h3>{Object.keys(courseStats).length}</h3>
-            <p>Kozi Zilizopo</p>
+            <p>Courses</p>
           </div>
         </div>
       </div>
       
       <div className="charts-row">
         <div className="chart-card">
-          <h4><i className="fas fa-venus-mars"></i> Wanafunzi kwa Jinsia</h4>
+          <h4><i className="fas fa-venus-mars"></i> Students by Gender</h4>
           <div className="gender-chart">
             <div className="gender-bar male" style={{ width: `${malePercent}%` }}>
-              <span>{maleCount} Wanaume ({malePercent}%)</span>
+              <span>{maleCount} Male ({malePercent}%)</span>
             </div>
             <div className="gender-bar female" style={{ width: `${femalePercent}%` }}>
-              <span>{femaleCount} Wanawake ({femalePercent}%)</span>
+              <span>{femaleCount} Female ({femalePercent}%)</span>
             </div>
           </div>
         </div>
         
         <div className="chart-card">
-          <h4><i className="fas fa-calendar-alt"></i> Umri wa Wanafunzi</h4>
+          <h4><i className="fas fa-calendar-alt"></i> Students by Age Group</h4>
           <div className="age-stats">
             {Object.entries(ageGroups).map(([group, count]) => (
               <div key={group} className="age-item">
@@ -96,7 +96,7 @@ const StatisticsDashboard = ({ students }) => {
       </div>
       
       <div className="courses-card">
-        <h4><i className="fas fa-trophy"></i> Kozi Zilizo na Wanafunzi Wengi</h4>
+        <h4><i className="fas fa-trophy"></i> Courses with Most Students</h4>
         <div className="courses-list">
           {Object.entries(courseStats)
             .sort((a,b) => b[1] - a[1])
@@ -114,7 +114,7 @@ const StatisticsDashboard = ({ students }) => {
       </div>
       
       <div className="recent-card">
-        <h4><i className="fas fa-clock"></i> Wanafunzi Waliojiunga Hivi Karibuni</h4>
+        <h4><i className="fas fa-clock"></i> Recently Joined Students</h4>
         <div className="recent-list">
           {recentStudents.map(student => (
             <div key={student.id} className="recent-item">
@@ -133,7 +133,7 @@ const StatisticsDashboard = ({ students }) => {
           {recentStudents.length === 0 && (
             <div className="no-data">
               <i className="fas fa-folder-open"></i>
-              <p>Hakuna wanafunzi waliopo</p>
+              <p>No recently joined students</p>
             </div>
           )}
         </div>
@@ -191,7 +191,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         </div>
         <div className="loading-container">
           <i className="fas fa-spinner fa-spin"></i>
-          <p>Inapakia taarifa...</p>
+          <p>Loading data...</p>
         </div>
       </div>
     );
@@ -208,7 +208,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="error-container">
           <i className="fas fa-exclamation-triangle"></i>
           <p>Error: {error}</p>
-          <button onClick={onLogout} className="btn btn-primary">Jaribu tena</button>
+          <button onClick={onLogout} className="btn btn-primary">Try Again</button>
         </div>
       </div>
     );
@@ -223,7 +223,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
           <button onClick={onLogout} className="logout-btn">TONDA</button>
         </div>
         <div className="error-container">
-          <p>Hakuna taarifa za mwanafunzi</p>
+          <p>No student information available</p>
         </div>
       </div>
     );
@@ -253,7 +253,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
           {results.length === 0 ? (
             <div className="results-placeholder">
               <i className="fas fa-file-alt"></i>
-              <p>Bado hakuna matokeo yaliyochapishwa.</p>
+              <p>No results available.</p>
             </div>
           ) : (
             <div className="results-list">
@@ -263,7 +263,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
                     <span className="result-term">📅 {result.term} - {result.year}</span>
                   </div>
                   <table className="result-table">
-                    <thead><tr><th>Somo</th><th>Daraja</th></tr></thead>
+                    <thead><tr><th>Subject</th><th>Grade</th></tr></thead>
                     <tbody>
                       {result.subject1 && <tr><td>{result.subject1}</td><td className="grade">{result.grade1}</td></tr>}
                       {result.subject2 && <tr><td>{result.subject2}</td><td className="grade">{result.grade2}</td></tr>}
@@ -271,7 +271,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
                       {result.subject4 && <tr><td>{result.subject4}</td><td className="grade">{result.grade4}</td></tr>}
                     </tbody>
                   </table>
-                  {result.remarks && <p className="result-remarks"><strong>Maoni:</strong> {result.remarks}</p>}
+                  {result.remarks && <p className="result-remarks"><strong>Remarks:</strong> {result.remarks}</p>}
                 </div>
               ))}
             </div>
@@ -487,11 +487,11 @@ const handleInstallClick = () => {
       const data = await response.json();
       if (data.success) {
         setFormData(prev => ({ ...prev, photo: data.imageUrl }));
-        alert('✅ Picha imepakiwa!');
+        alert('✅ Photo uploaded successfully!');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('❌ Imeshindwa kupakia picha');
+      alert('❌ You have no ability to upload photo. Please try again!');
     } finally {
       setUploadingPhoto(false);
     }
@@ -505,12 +505,12 @@ const handleInstallClick = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!canAdd) {
-      alert('⚠️ Samahani! Wewe ni user wa kawaida, huna ruhusa ya kuongeza wanafunzi.');
+      alert('sorry, you do not have permission to add students.');
       return;
     }
 
     if (!formData.fullName || !formData.age || !formData.course || !formData.gender) {
-      alert('Tafadhali jaza sehemu zote muhimu!');
+      alert('please fill in all required fields (full name, age, course, gender)');
       return;
     }
 
@@ -526,7 +526,7 @@ const handleInstallClick = () => {
 
       if (!response.ok) throw new Error('Failed to save');
       
-      alert(editingId ? '✅ Mwanafunzi amesasishwa!' : '✅ Mwanafunzi amehifadhiwa!');
+      alert(editingId ? '✅ Student updated successfully!' : '✅ Student saved successfully!');
       fetchStudents();
       setFormData({ fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: '' });
       setEditingId(null);
@@ -538,7 +538,7 @@ const handleInstallClick = () => {
 
   const handleEdit = (student) => {
     if (!canEdit) {
-      alert('⚠️ Samahani! Wewe ni user wa kawaida, huna ruhusa ya kuhariri wanafunzi.');
+      alert('⚠️ Sorry! You are a regular user, you do not have permission to edit students.');
       return;
     }
     setFormData(student);
@@ -547,14 +547,14 @@ const handleInstallClick = () => {
 
   const handleDelete = async (id) => {
     if (!canDelete) {
-      alert('⚠️ Samahani! Wewe ni user wa kawaida, huna ruhusa ya kufuta wanafunzi.');
+      alert('⚠️ Sorry! You are a regular user, you do not have permission to delete students.');
       return;
     }
     
-    if (window.confirm('Je, una uhakika unataka kufuta mwanafunzi huyu?')) {
+    if (window.confirm('Are you sure you want to delete this student?')) {
       try {
         await fetch(`${API_URL}/students/${id}`, { method: 'DELETE' });
-        alert('✅ Mwanafunzi amefutwa!');
+        alert('✅ Student deleted successfully!');
         fetchStudents();
       } catch (error) {
         console.error('Error deleting student:', error);
@@ -565,11 +565,11 @@ const handleInstallClick = () => {
 
   // ============ PARENT CODE GENERATION ============
   const generateParentCode = async (student) => {
-    const parentName = prompt('Jina la mzazi:');
+    const parentName = prompt('Parent\'s Name:');
     if (!parentName) return;
     
-    const phone = prompt('Namba ya simu ya mzazi:');
-    const email = prompt('Barua pepe ya mzazi:');
+    const phone = prompt('Parent\'s Phone Number:');
+    const email = prompt('Parent\'s Email Address:');
     
     try {
       const response = await fetch(`${API_URL}/parents/generate`, {
@@ -584,13 +584,13 @@ const handleInstallClick = () => {
       });
       const data = await response.json();
       if (data.success) {
-        alert(`✅ Code ya mzazi: ${data.parentCode}\n\nWape mzazi code hii kuingia kwenye Parent Portal.`);
+        alert(`✅ Parent Code: ${data.parentCode}\n\nPlease provide this code to the parent to access the Parent Portal.`);
       } else {
-        alert('❌ Imeshindwa kuunda code. Jaribu tena!');
+        alert('❌ Failed to generate parent code. Please try again!');
       }
     } catch (error) {
       console.error('Error generating parent code:', error);
-      alert('❌ Kuna tatizo, jaribu tena!');
+      alert('❌ An error occurred, please try again!');
     }
   };
 
@@ -615,12 +615,12 @@ const handleInstallClick = () => {
 
   const handleSendResults = async () => {
     if (!resultsData.subject1 || !resultsData.grade1) {
-        alert('Tafadhali jaza angalau somo moja na daraja lake!');
+        alert('Please fill in at least one subject and its grade!');
         return;
     }
     
     if (!resultsData.sendMethod) {
-        alert('Chagua njia ya kutuma (Email au SMS)!');
+        alert('Please select a method to send the results (Email or SMS)!');
         return;
     }
 
@@ -649,33 +649,33 @@ const handleInstallClick = () => {
         });
         
         const saveData = await saveResponse.json();
-        if (!saveData.success) { alert('❌ Imeshindwa kuhifadhi matokeo!'); setSendingStatus(''); return; }
+        if (!saveData.success) { alert('❌ Failed to save results!'); setSendingStatus(''); return; }
         
-        alert(`📊 Matokeo yamehifadhiwa!\n\n📈 Average: ${average}\n🏆 Division: ${division}`);
+        alert(`📊 Results saved successfully!\n\n📈 Average: ${average}\n🏆 Division: ${division}`);
         
         if (resultsData.sendMethod === 'email') {
-            if (!selectedStudent.email) { alert('Mwanafunzi hana email!'); setSendingStatus(''); return; }
+            if (!selectedStudent.email) { alert('Student has no email address!'); setSendingStatus(''); return; }
             const emailResponse = await fetch(`${API_URL}/send-results`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ student: selectedStudent, results: resultsData })
             });
-            if ((await emailResponse.json()).success) alert('✅ Matokeo yametumwa kwa email!');
-            else alert('⚠️ Matokeo yamehifadhiwa lakini email haikutumwa!');
+            if ((await emailResponse.json()).success) alert('✅ Results sent via email!');
+            else alert('⚠️ Results saved but email failed to send!');
         } 
         else if (resultsData.sendMethod === 'sms') {
-            if (!selectedStudent.phone) { alert('Mwanafunzi hana namba!'); setSendingStatus(''); return; }
+            if (!selectedStudent.phone) { alert('Student has no phone number!'); setSendingStatus(''); return; }
             const smsResponse = await fetch(`${API_URL}/send-sms`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ student: selectedStudent, results: resultsData })
             });
-            if ((await smsResponse.json()).success) alert('✅ Matokeo yametumwa kwa SMS!');
-            else alert('⚠️ Matokeo yamehifadhiwa lakini SMS haikutumwa!');
+            if ((await smsResponse.json()).success) alert('✅ Results sent via SMS!');
+            else alert('⚠️ Results saved but SMS failed to send!');
         }
         
         setShowModal(false);
         fetchStudents();
     } catch (error) {
-        alert('❌ Kuna tatizo, jaribu tena!');
+        alert('❌ An error occurred, please try again!');
     } finally {
         setSendingStatus('');
     }
@@ -687,7 +687,7 @@ const handleInstallClick = () => {
   );
 
   const downloadCSV = () => {
-    const headers = ["JINA KAMILI", "UMRI", "JINSIA", "KOZI", "NAMBA YA SIMU", "EMAIL"];
+    const headers = ["Full Name", "Age", "Gender", "Course", "Phone Number", "Email"];
     const rows = students.map(s => [`"${s.fullName}"`, s.age, s.gender, `"${s.course}"`, `"${s.phone || ''}"`, `"${s.email || ''}"`]);
     const csv = [headers, ...rows].map(row => row.join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv" });
@@ -705,7 +705,7 @@ const handleInstallClick = () => {
           <div className="login-header">
             <i className="fas fa-user-plus"></i>
             <h1>KATWE SECONDARY SCHOOL</h1>
-            <p>Jisajili kwa akaunti yako</p>
+            <p>Register for an account</p>
           </div>
           
           {registerSuccess ? (
@@ -851,23 +851,23 @@ const handleInstallClick = () => {
           
           {!selectedRole ? (
             <div className="role-selection">
-              <h3>Chagua Aina ya Account</h3>
+              <h3>Choose Account Type</h3>
               <div className="role-buttons">
                 <button type="button" onClick={() => handleRoleSelect('admin')} className="role-btn admin-role">
                   <i className="fas fa-user-shield"></i>
-                  <div><strong>Admin</strong><small>Access kamili ya kudhibiti</small></div>
+                  <div><strong>Admin</strong><small>Full access to manage</small></div>
                 </button>
                 <button type="button" onClick={() => handleRoleSelect('user')} className="role-btn user-role">
                   <i className="fas fa-user"></i>
-                  <div><strong>User wa Kawaida</strong><small>Kutazama tu (Read only)</small></div>
+                  <div><strong>Regular User</strong><small>View only (Read only)</small></div>
                 </button>
                 <button type="button" onClick={() => setShowParentLogin(true)} className="role-btn parent-role">
                   <i className="fas fa-users"></i>
-                  <div><strong>Mzazi / Guardian</strong><small>Angalia matokeo ya mtoto wako</small></div>
+                  <div><strong>Parent / Guardian</strong><small>View your child's results</small></div>
                 </button>
               </div>
               <div className="register-link">
-                <p>Huna akaunti? <button onClick={() => setShowRegister(true)} className="link-btn">Jisajili hapa</button></p>
+                <p>Don't have an account? <button onClick={() => setShowRegister(true)} className="link-btn">Register here</button></p>
               </div>
             </div>
           ) : (
@@ -877,7 +877,7 @@ const handleInstallClick = () => {
                   <i className={selectedRole === 'admin' ? 'fas fa-user-shield' : 'fas fa-user'}></i>
                   {selectedRole === 'admin' ? ' Admin Login' : ' User Login'}
                 </span>
-                <button type="button" onClick={() => setSelectedRole(null)} className="change-role-btn">Badilisha</button>
+                <button type="button" onClick={() => setSelectedRole(null)} className="change-role-btn">Change Role</button>
               </div>
               <div className="form-group">
                 <label><i className="fas fa-user"></i> Username</label>
@@ -888,7 +888,7 @@ const handleInstallClick = () => {
                 <input type="password" name="password" value={loginForm.password} onChange={handleLoginChange} placeholder="••••••••" required />
               </div>
               {loginError && <div className="error-message">{loginError}</div>}
-              <button type="submit" className="btn-login">INGIA</button>
+              <button type="submit" className="btn-login">LOGIN</button>
             </form>
           )}
           
@@ -937,7 +937,7 @@ const handleInstallClick = () => {
           </button>
           <button className={`toggle-btn ${!showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement && !showAnnouncements ? 'active' : ''}`} 
             onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
-            <i className="fas fa-users"></i> Wanafunzi
+            <i className="fas fa-users"></i> students
           </button>
           <button className={`toggle-btn ${showTimetable ? 'active' : ''}`} 
             onClick={() => { setShowDashboard(false); setShowTimetable(true); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
@@ -956,7 +956,7 @@ const handleInstallClick = () => {
               </button>
               <button className={`toggle-btn ${showAnnouncements ? 'active' : ''}`} 
                 onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(true); }}>
-                <i className="fas fa-bullhorn"></i> Matangazo
+                <i className="fas fa-bullhorn"></i> Announcements
               </button>
             </>
           )}
@@ -964,11 +964,11 @@ const handleInstallClick = () => {
         <div className="header-buttons">
         {showInstallButton && (
             <button onClick={handleInstallClick} className="install-btn">
-                <i className="fas fa-download"></i> Sakinisha App
+                <i className="fas fa-download"></i> Install App
             </button>
         )}
         
-        <button onClick={handleLogout} className="logout-btn">TONDA MFUMO</button>
+        <button onClick={handleLogout} className="logout-btn">LOG OUT</button>
       </div>
       </div>
 
@@ -989,50 +989,50 @@ const handleInstallClick = () => {
             <div className="card">
               <div className="card-header">
                 <i className="fas fa-user-plus"></i>
-                <h2>{editingId ? '📝 HARIRI MWANAFUNZI' : '📝 SAJILI MWANAFUNZI'}</h2>
+                <h2>{editingId ? '📝 EDIT STUDENT' : '📝 REGISTER STUDENT'}</h2>
                 {!canAdd && <span className="permission-badge"><i className="fas fa-lock"></i> Read Only</span>}
               </div>
               <div className="card-body">
                 {!canAdd && (
                   <div className="permission-message">
                     <i className="fas fa-info-circle"></i>
-                    <p>Samahani, wewe ni user wa kawaida. Huna ruhusa ya kuongeza au kuhariri wanafunzi.</p>
+                    <p>Sorry, you are a regular user. You do not have permission to add or edit students.</p>
                   </div>
                 )}
                 <form onSubmit={handleSubmit}>
                   <div className="form-group">
-                    <label>JINA KAMILI *</label>
+                    <label>FULL NAME *</label>
                     <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
-                    <label>UMRI *</label>
+                    <label>AGE *</label>
                     <input type="number" name="age" value={formData.age} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
-                    <label>KOZI YA MASOMO *</label>
+                    <label>COURSE *</label>
                     <input type="text" name="course" value={formData.course} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
-                    <label>JINSIA *</label>
+                    <label>GENDER *</label>
                     <select name="gender" value={formData.gender} onChange={handleChange} required disabled={!canAdd}>
-                      <option value="">Chagua Jinsia...</option>
-                      <option value="MALE">MALE (Mwanaume)</option>
-                      <option value="FEMALE">FEMALE (Mwanamke)</option>
+                      <option value="">Select Gender...</option>
+                      <option value="MALE">MALE (Male)</option>
+                      <option value="FEMALE">FEMALE (Female)</option>
                     </select>
                   </div>
                   <div className="form-group">
-                    <label>Namba ya Simu (Kwa SMS)</label>
+                    <label>Phone Number (SMS)</label>
                     <input type="tel" name="phone" value={formData.phone} onChange={handleChange} disabled={!canAdd} />
                   </div>
                   <div className="form-group">
-                    <label>Barua pepe (Email)</label>
+                    <label>Email Address</label>
                     <input type="email" name="email" value={formData.email} onChange={handleChange} disabled={!canAdd} />
                   </div>
                   
                   <div className="form-group">
-                    <label>PICHA YA MWANAFUNZI</label>
+                    <label>Photo</label>
                     <input type="file" accept="image/*" onChange={handlePhotoUpload} disabled={!canAdd || uploadingPhoto} />
-                    {uploadingPhoto && <div className="uploading-text"><i className="fas fa-spinner fa-spin"></i> Inapakia picha...</div>}
+                    {uploadingPhoto && <div className="uploading-text"><i className="fas fa-spinner fa-spin"></i> Uploading photo...</div>}
                     {formData.photo && (
                       <div className="photo-preview">
                         <img src={formData.photo} alt="Student" />
@@ -1043,7 +1043,7 @@ const handleInstallClick = () => {
                   
                   {canAdd && (
                     <button type="submit" className="btn btn-primary">
-                      <i className="fas fa-save"></i> {editingId ? 'SASISHA' : 'HIFADHI'}
+                      <i className="fas fa-save"></i> {editingId ? 'UPDATE' : 'SAVE'}
                     </button>
                   )}
                 </form>
@@ -1054,20 +1054,20 @@ const handleInstallClick = () => {
             <div className="card">
               <div className="card-header">
                 <i className="fas fa-users"></i>
-                <h2>📋 ORODHA RASMI YA WANAFUNZI</h2>
+                <h2>📋 FULL LIST OF STUDENTS</h2>
               </div>
               <div className="card-body">
                 <div className="search-section">
-                  <input type="text" className="search-input" placeholder="🔍 Tafuta kwa jina au kozi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-                  <span className="stat-badge">Wanafunzi {filteredStudents.length}</span>
+                  <input type="text" className="search-input" placeholder="🔍 Search by name or course..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                  <span className="stat-badge">Students {filteredStudents.length}</span>
                 </div>
                 
-                {loading && <div className="loading-spinner">Inapakia data...</div>}
+                {loading && <div className="loading-spinner">Loading data...</div>}
                 
                 <div className="table-wrapper">
                   <table className="student-table">
                     <thead>
-                      <tr><th>PICHA</th><th>JINA</th><th>KOZI</th><th>SIMU</th><th>EMAIL</th><th>VITENDO</th></tr>
+                      <tr><th>Photo</th><th>NAME</th><th>COURSE</th><th>PHONE</th><th>EMAIL</th><th>ACTIONS</th></tr>
                     </thead>
                     <tbody>
                       {filteredStudents.length === 0 && !loading ? (
@@ -1083,10 +1083,10 @@ const handleInstallClick = () => {
                             <td>{student.phone || '—'}</td>
                             <td>{student.email || '—'}</td>
                             <td className="action-buttons">
-                              <button className="btn btn-sm btn-primary" onClick={() => openResultsModal(student)}><i className="fas fa-chart-line"></i> Matokeo</button>
+                              <button className="btn btn-sm btn-primary" onClick={() => openResultsModal(student)}><i className="fas fa-chart-line"></i> Results</button>
                               <button className="btn btn-sm btn-info" onClick={() => downloadStudentReport(student.id)}><i className="fas fa-file-pdf"></i> PDF</button>
                               {canEdit && <button className="btn btn-sm btn-outline" onClick={() => handleEdit(student)}><i className="fas fa-edit"></i> Edit</button>}
-                              {canDelete && <button className="btn btn-sm btn-danger" onClick={() => handleDelete(student.id)}><i className="fas fa-trash-alt"></i> Futa</button>}
+                              {canDelete && <button className="btn btn-sm btn-danger" onClick={() => handleDelete(student.id)}><i className="fas fa-trash-alt"></i> Delete</button>}
                               {canEdit && <button className="btn btn-sm btn-success" onClick={() => generateParentCode(student)}><i className="fas fa-users"></i> Parent Code</button>}
                             </td>
                           </tr>
@@ -1097,16 +1097,16 @@ const handleInstallClick = () => {
                 </div>
                 <hr />
                 <div className="download-area">
-                  <span><i className="fas fa-download"></i> <strong>PAKUA RIPOTI</strong></span>
+                  <span><i className="fas fa-download"></i> <strong>Download Reports</strong></span>
                   <div className="download-buttons">
                     <button onClick={downloadCSV} className="btn btn-outline btn-sm">
                       <i className="fas fa-file-csv"></i> CSV
                     </button>
                     <button onClick={downloadAllStudentsReport} className="btn btn-outline btn-sm">
-                      <i className="fas fa-file-pdf"></i> Wanafunzi Wote PDF
+                      <i className="fas fa-file-pdf"></i> All Students PDF
                     </button>
                     <button onClick={() => downloadClassReport('Form 1')} className="btn btn-outline btn-sm">
-                      <i className="fas fa-file-pdf"></i> Ripoti ya Darasa PDF
+                      <i className="fas fa-file-pdf"></i> Class Report PDF
                     </button>
                   </div>
                 </div>
@@ -1119,19 +1119,19 @@ const handleInstallClick = () => {
             <div className="modal-overlay" onClick={() => setShowModal(false)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '700px', width: '90%' }}>
                 <div className="modal-header">
-                  <h2><i className="fas fa-chart-line"></i> Jaza Matokeo - {selectedStudent.fullName}</h2>
+                  <h2><i className="fas fa-chart-line"></i> Enter Results - {selectedStudent.fullName}</h2>
                   <button className="modal-close" onClick={() => setShowModal(false)}>&times;</button>
                 </div>
                 <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
                   <div className="results-form">
-                    <h3>Masomo 7</h3>
+                    <h3>Subjects 7</h3>
 
                     {/* Somo 1 */}
                     <div className="form-group">
-                      <label>Somo la 1</label>
+                      <label>Subject 1</label>
                       <div className="subject-row">
-                        <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} style={{ flex: 2 }} />
-                        <input type="number" name="score1" placeholder="Alama" value={resultsData.score1} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <input type="text" name="subject1" placeholder="Subject name" value={resultsData.subject1} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score1" placeholder="Score" value={resultsData.score1} onChange={handleResultsChange} style={{ width: 80 }} />
                         <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange} style={{ width: 70 }}>
                           <option value="">Grade</option>
                           <option value="A">A</option>
@@ -1145,10 +1145,10 @@ const handleInstallClick = () => {
 
                     {/* Somo 2 */}
                     <div className="form-group">
-                      <label>Somo la 2</label>
+                      <label>Subject 2</label>
                       <div className="subject-row">
-                        <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} style={{ flex: 2 }} />
-                        <input type="number" name="score2" placeholder="Alama" value={resultsData.score2} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <input type="text" name="subject2" placeholder="Subject name" value={resultsData.subject2} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score2" placeholder="Score" value={resultsData.score2} onChange={handleResultsChange} style={{ width: 80 }} />
                         <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange} style={{ width: 70 }}>
                           <option value="">Grade</option>
                           <option value="A">A</option>
@@ -1162,10 +1162,10 @@ const handleInstallClick = () => {
 
                     {/* Somo 3 */}
                     <div className="form-group">
-                      <label>Somo la 3</label>
+                      <label>Subject 3</label>
                       <div className="subject-row">
-                        <input type="text" name="subject3" placeholder="Jina la somo" value={resultsData.subject3} onChange={handleResultsChange} style={{ flex: 2 }} />
-                        <input type="number" name="score3" placeholder="Alama" value={resultsData.score3} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <input type="text" name="subject3" placeholder="Subject name" value={resultsData.subject3} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score3" placeholder="Score" value={resultsData.score3} onChange={handleResultsChange} style={{ width: 80 }} />
                         <select name="grade3" value={resultsData.grade3} onChange={handleResultsChange} style={{ width: 70 }}>
                           <option value="">Grade</option>
                           <option value="A">A</option>
@@ -1179,10 +1179,10 @@ const handleInstallClick = () => {
 
                     {/* Somo 4 */}
                     <div className="form-group">
-                      <label>Somo la 4</label>
+                      <label>Subject 4</label>
                       <div className="subject-row">
-                        <input type="text" name="subject4" placeholder="Jina la somo" value={resultsData.subject4} onChange={handleResultsChange} style={{ flex: 2 }} />
-                        <input type="number" name="score4" placeholder="Alama" value={resultsData.score4} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <input type="text" name="subject4" placeholder="Subject name" value={resultsData.subject4} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score4" placeholder="Score" value={resultsData.score4} onChange={handleResultsChange} style={{ width: 80 }} />
                         <select name="grade4" value={resultsData.grade4} onChange={handleResultsChange} style={{ width: 70 }}>
                           <option value="">Grade</option>
                           <option value="A">A</option>
@@ -1196,10 +1196,10 @@ const handleInstallClick = () => {
 
                     {/* Somo 5 */}
                     <div className="form-group">
-                      <label>Somo la 5</label>
+                      <label>Subject 5</label>
                       <div className="subject-row">
-                        <input type="text" name="subject5" placeholder="Jina la somo" value={resultsData.subject5} onChange={handleResultsChange} style={{ flex: 2 }} />
-                        <input type="number" name="score5" placeholder="Alama" value={resultsData.score5} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <input type="text" name="subject5" placeholder="Subject name" value={resultsData.subject5} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score5" placeholder="Score" value={resultsData.score5} onChange={handleResultsChange} style={{ width: 80 }} />
                         <select name="grade5" value={resultsData.grade5} onChange={handleResultsChange} style={{ width: 70 }}>
                           <option value="">Grade</option>
                           <option value="A">A</option>
@@ -1213,10 +1213,10 @@ const handleInstallClick = () => {
 
                     {/* Somo 6 */}
                     <div className="form-group">
-                      <label>Somo la 6</label>
+                      <label>Subject 6</label>
                       <div className="subject-row">
-                        <input type="text" name="subject6" placeholder="Jina la somo" value={resultsData.subject6} onChange={handleResultsChange} style={{ flex: 2 }} />
-                        <input type="number" name="score6" placeholder="Alama" value={resultsData.score6} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <input type="text" name="subject6" placeholder="Subject name" value={resultsData.subject6} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score6" placeholder="Score" value={resultsData.score6} onChange={handleResultsChange} style={{ width: 80 }} />
                         <select name="grade6" value={resultsData.grade6} onChange={handleResultsChange} style={{ width: 70 }}>
                           <option value="">Grade</option>
                           <option value="A">A</option>
@@ -1230,10 +1230,10 @@ const handleInstallClick = () => {
 
                     {/* Somo 7 */}
                     <div className="form-group">
-                      <label>Somo la 7</label>
+                      <label>Subject 7</label>
                       <div className="subject-row">
-                        <input type="text" name="subject7" placeholder="Jina la somo" value={resultsData.subject7} onChange={handleResultsChange} style={{ flex: 2 }} />
-                        <input type="number" name="score7" placeholder="Alama" value={resultsData.score7} onChange={handleResultsChange} style={{ width: 80 }} />
+                        <input type="text" name="subject7" placeholder="Subject name" value={resultsData.subject7} onChange={handleResultsChange} style={{ flex: 2 }} />
+                        <input type="number" name="score7" placeholder="Score" value={resultsData.score7} onChange={handleResultsChange} style={{ width: 80 }} />
                         <select name="grade7" value={resultsData.grade7} onChange={handleResultsChange} style={{ width: 70 }}>
                           <option value="">Grade</option>
                           <option value="A">A</option>
@@ -1246,33 +1246,33 @@ const handleInstallClick = () => {
                     </div>
 
                     <div className="form-group">
-                      <label>MAONI / REMARKS</label>
+                      <label> REMARKS</label>
                       <textarea name="remarks" rows="3" placeholder="Maoni kuhusu mwanafunzi..." value={resultsData.remarks} onChange={handleResultsChange}></textarea>
                     </div>
 
                     <div className="form-group">
-                      <label>NJIA YA KUTUMA</label>
+                      <label>ways to send</label>
                       <div className="send-methods">
                         <label className="send-option">
                           <input type="radio" name="sendMethod" value="email" onChange={handleResultsChange} />
-                          <i className="fas fa-envelope"></i> Tuma kwa Email
+                          <i className="fas fa-envelope"></i> send by email
                         </label>
                         <label className="send-option">
                           <input type="radio" name="sendMethod" value="sms" onChange={handleResultsChange} />
-                          <i className="fas fa-sms"></i> Tuma kwa SMS
+                          <i className="fas fa-sms"></i> send by sms
                         </label>
                       </div>
                     </div>
 
                     {sendingStatus === 'processing' && (
-                      <div className="sending-status"><i className="fas fa-spinner fa-spin"></i> Inatuma...</div>
+                      <div className="sending-status"><i className="fas fa-spinner fa-spin"></i> sending...</div>
                     )}
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button className="btn btn-outline" onClick={() => setShowModal(false)}>Funga</button>
+                  <button className="btn btn-outline" onClick={() => setShowModal(false)}>Close</button>
                   <button className="btn btn-primary" onClick={handleSendResults} disabled={sendingStatus === 'processing'}>
-                    <i className="fas fa-paper-plane"></i> Tuma Matokeo
+                    <i className="fas fa-paper-plane"></i> Send Results
                   </button>
                 </div>
               </div>
