@@ -329,13 +329,16 @@ function App() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [sendingStatus, setSendingStatus] = useState('');
   const [resultsData, setResultsData] = useState({
-    subject1: '', grade1: '',
-    subject2: '', grade2: '',
-    subject3: '', grade3: '',
-    subject4: '', grade4: '',
+    subject1: '', score1: '', grade1: '',
+    subject2: '', score2: '', grade2: '',
+    subject3: '', score3: '', grade3: '',
+    subject4: '', score4: '', grade4: '',
+    subject5: '', score5: '', grade5: '',
+    subject6: '', score6: '', grade6: '',
+    subject7: '', score7: '', grade7: '',
     remarks: '',
     sendMethod: ''
-  });
+});
 
   // ============ API BASE URL ============
   const API_URL = process.env.REACT_APP_API_URL || 'https://katwe-backend.onrender.com/api';
@@ -1085,67 +1088,8 @@ function App() {
                   <h2><i className="fas fa-chart-line"></i> Jaza Matokeo - {selectedStudent.fullName}</h2>
                   <button className="modal-close" onClick={() => setShowModal(false)}>&times;</button>
                 </div>
-                <div className="modal-body">
-                  <div className="results-form">
-                    <div className="form-group">
-                      <label>SOMO LA 1</label>
-                      <div className="subject-row">
-                        <input type="text" name="subject1" placeholder="Jina la somo" value={resultsData.subject1} onChange={handleResultsChange} />
-                        <select name="grade1" value={resultsData.grade1} onChange={handleResultsChange}>
-                          <option value="">Daraja</option>
-                          <option value="A">A</option><option value="B">B</option>
-                          <option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <div className="form-group">
-                      <label>SOMO LA 2</label>
-                      <div className="subject-row">
-                        <input type="text" name="subject2" placeholder="Jina la somo" value={resultsData.subject2} onChange={handleResultsChange} />
-                        <select name="grade2" value={resultsData.grade2} onChange={handleResultsChange}>
-                          <option value="">Daraja</option>
-                          <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                          <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <div className="form-group">
-                      <label>SOMO LA 3</label>
-                      <div className="subject-row">
-                        <input type="text" name="subject3" placeholder="Jina la somo" value={resultsData.subject3} onChange={handleResultsChange} />
-                        <select name="grade3" value={resultsData.grade3} onChange={handleResultsChange}>
-                          <option value="">Daraja</option>
-                          <option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
-                          <option value="C+">C+</option><option value="C">C</option><option value="D">D</option><option value="F">F</option>
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <div className="form-group">
-                      <label>MAONI / REMARKS</label>
-                      <textarea name="remarks" rows="3" placeholder="Maoni kuhusu mwanafunzi..." value={resultsData.remarks} onChange={handleResultsChange}></textarea>
-                    </div>
-                    
-                    <div className="form-group">
-                      <label>NJIA YA KUTUMA</label>
-                      <div className="send-methods">
-                        <label className="send-option">
-                          <input type="radio" name="sendMethod" value="email" onChange={handleResultsChange} />
-                          <i className="fas fa-envelope"></i> Tuma kwa Email ({selectedStudent.email || 'Hakuna email'})
-                        </label>
-                        <label className="send-option">
-                          <input type="radio" name="sendMethod" value="sms" onChange={handleResultsChange} />
-                          <i className="fas fa-sms"></i> Tuma kwa SMS ({selectedStudent.phone || 'Hakuna namba'})
-                        </label>
-                      </div>
-                    </div>
-                    
-                    {sendingStatus === 'processing' && (
-                      <div className="sending-status"><i className="fas fa-spinner fa-spin"></i> Inatuma...</div>
-                    )}
-                  </div>
+                <div className="results-form">
+                  <h3>Masomo 7</h3>
                 </div>
                 <div className="modal-footer">
                   <button className="btn btn-outline" onClick={() => setShowModal(false)}>Funga</button>
