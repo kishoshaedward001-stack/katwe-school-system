@@ -930,26 +930,26 @@ const handleInstallClick = () => {
         
         <div className="toggle-buttons">
           <button className={`toggle-btn ${showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement && !showAnnouncements ? 'active' : ''}`} 
-            onClick={() => { setShowDashboard(true); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
+            onClick={() => { setShowDashboard(true); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(true); }}>
             <i className="fas fa-chart-line"></i> Dashboard
           </button>
           <button className={`toggle-btn ${!showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement && !showAnnouncements ? 'active' : ''}`} 
-            onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
+            onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(true); }}>
             <i className="fas fa-users"></i> students
           </button>
           <button className={`toggle-btn ${showTimetable ? 'active' : ''}`} 
-            onClick={() => { setShowDashboard(false); setShowTimetable(true); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
+            onClick={() => { setShowDashboard(false); setShowTimetable(true); setShowTimetableAdmin(true); setShowUserManagement(false); setShowAnnouncements(false); }}>
             <i className="fas fa-calendar-alt"></i> Timetable
           </button>
           
           {userRole === 'admin' && (
             <>
               <button className={`toggle-btn ${showTimetableAdmin ? 'active' : ''}`} 
-                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(true); setShowUserManagement(false); setShowAnnouncements(false); }}>
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(true); setShowUserManagement(false); setShowAnnouncements(true); }}>
                 <i className="fas fa-cog"></i> Timetable Admin
               </button>
               <button className={`toggle-btn ${showUserManagement ? 'active' : ''}`} 
-                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(true); setShowAnnouncements(false); }}>
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(true); setShowAnnouncements(true); }}>
                 <i className="fas fa-users-cog"></i> User Management
               </button>
               <button className={`toggle-btn ${showAnnouncements ? 'active' : ''}`} 
@@ -987,7 +987,7 @@ const handleInstallClick = () => {
             <div className="card">
               <div className="card-header">
                 <i className="fas fa-user-plus"></i>
-                <h2>{editingId ? '📝 EDIT STUDENT' : '📝 REGISTER STUDENT'}</h2>
+                <h2>{editingId ? ' EDIT STUDENT' : ' REGISTER STUDENT'}</h2>
                 {!canAdd && <span className="permission-badge"><i className="fas fa-lock"></i> Read Only</span>}
               </div>
               <div className="card-body">
@@ -1069,12 +1069,12 @@ const handleInstallClick = () => {
                     </thead>
                     <tbody>
                       {filteredStudents.length === 0 && !loading ? (
-                        <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>📭 Hakuna wanafunzi waliosajiliwa</td></tr>
+                        <tr><td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}> Hakuna wanafunzi waliosajiliwa</td></tr>
                       ) : (
                         filteredStudents.map(student => (
                           <tr key={student.id}>
                             <td className="photo-cell">
-                              {student.photo ? <img src={student.photo} alt={student.fullName} className="student-thumb" /> : <div className="no-photo">📷</div>}
+                              {student.photo ? <img src={student.photo} alt={student.fullName} className="student-thumb" /> : <div className="no-photo">photo</div>}
                             </td>
                             <td><strong>{student.fullName}</strong><br/><small>{student.age} yrs | {student.gender}</small></td>
                             <td>{student.course}</td>
