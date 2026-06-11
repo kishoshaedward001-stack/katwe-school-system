@@ -1287,10 +1287,7 @@ const handleInstallClick = () => {
           )}
         </>
       )}
-    </div>
-  );
-}
-{/* Modal ya Progress Chart */}
+      {/* Modal ya Progress Chart */}
 {showProgressModal && selectedStudentForProgress && (
     <div className="modal-overlay" onClick={() => setShowProgressModal(false)}>
         <div className="modal-content progress-modal" onClick={(e) => e.stopPropagation()}>
@@ -1307,4 +1304,8 @@ const handleInstallClick = () => {
         </div>
     </div>
 )}
+    </div>
+  );
+}
+
 export default App;
