@@ -4,6 +4,7 @@ import Timetable from './components/Timetable';
 import TimetableAdmin from './components/TimetableAdmin';
 import UserManagement from './components/UserManagement';
 import Announcements from './components/Announcements';
+import ProgressChart from './components/ProgressChart';
 
 // ============ DASHBOARD COMPONENT ============
 const StatisticsDashboard = ({ students }) => {
