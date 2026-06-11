@@ -946,7 +946,7 @@ const handleInstallClick = () => {
           </button>
           {/* Button ya Progress Chart */}
 <button className="btn btn-sm btn-info" onClick={() => {
-    setSelectedStudentForProgress(student);
+    setSelectedStudentForProgress(selectedStudent);
     setShowProgressModal(true);
 }}>
     <i className="fas fa-chart-line"></i> Progress
