@@ -917,7 +917,7 @@ const handleInstallClick = () => {
           fontSize: '1rem'
         }}
       >
-         HELLO!  |  WELCOME TO KATWE SECONDARY SCHOOL  |   STUDENT ANALYTICS & MANAGEMENT HUB |   ENJOY OUR WEBSITE!  |   KARIBU SANA!   |   CALL US: +255 614910462& 0799119250  |  EMAIL: info@katwe.com
+         HELLO!  |  WELCOME TO KATWE SECONDARY SCHOOL  |   STUDENT  MANAGEMENT SYSTEM & RESULT |   ENJOY OUR WEBSITE!  |   KARIBU SANA!   |   CALL US: +255 614910462& 0799119250  |  EMAIL: info@katwe.com
       </marquee>
       
       <div className="school-header">
@@ -930,11 +930,11 @@ const handleInstallClick = () => {
         
         <div className="toggle-buttons">
           <button className={`toggle-btn ${showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement && !showAnnouncements ? 'active' : ''}`} 
-            onClick={() => { setShowDashboard(true); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(true); }}>
+            onClick={() => { setShowDashboard(true); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
             <i className="fas fa-chart-line"></i> Dashboard
           </button>
           <button className={`toggle-btn ${!showDashboard && !showTimetable && !showTimetableAdmin && !showUserManagement && !showAnnouncements ? 'active' : ''}`} 
-            onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(true); }}>
+            onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
             <i className="fas fa-users"></i> students
           </button>
           <button className={`toggle-btn ${showTimetable ? 'active' : ''}`} 
@@ -945,15 +945,15 @@ const handleInstallClick = () => {
           {userRole === 'admin' && (
             <>
               <button className={`toggle-btn ${showTimetableAdmin ? 'active' : ''}`} 
-                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(true); setShowUserManagement(false); setShowAnnouncements(true); }}>
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(true); setShowUserManagement(false); setShowAnnouncements(false); }}>
                 <i className="fas fa-cog"></i> Timetable Admin
               </button>
               <button className={`toggle-btn ${showUserManagement ? 'active' : ''}`} 
-                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(true); setShowAnnouncements(true); }}>
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(true); setShowAnnouncements(false); }}>
                 <i className="fas fa-users-cog"></i> User Management
               </button>
               <button className={`toggle-btn ${showAnnouncements ? 'active' : ''}`} 
-                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(true); }}>
+                onClick={() => { setShowDashboard(false); setShowTimetable(false); setShowTimetableAdmin(false); setShowUserManagement(false); setShowAnnouncements(false); }}>
                 <i className="fas fa-bullhorn"></i> Announcements
               </button>
             </>
