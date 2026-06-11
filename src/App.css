@@ -2472,3 +2472,123 @@ textarea:focus {
 .install-btn:hover {
     background: #059669;
 }
+/* Progress Chart Styles */
+.progress-container {
+    padding: 1rem;
+}
+
+.progress-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.progress-stat-card {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.progress-stat-card .stat-icon {
+    font-size: 2rem;
+}
+
+.progress-stat-card .stat-info h4 {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0 0 0.3rem 0;
+}
+
+.progress-stat-card .stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #1e293b;
+    margin: 0;
+}
+
+.progress-chart-container {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.chart-wrapper {
+    height: 350px;
+    position: relative;
+}
+
+.progress-summary {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.progress-summary h4 {
+    color: #1e3c72;
+    margin-bottom: 1rem;
+}
+
+.summary-items {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-item span {
+    display: block;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.3rem;
+}
+
+.summary-item strong {
+    font-size: 1.1rem;
+    color: #1e293b;
+}
+
+.summary-item strong.positive {
+    color: #10b981;
+}
+
+.summary-item strong.negative {
+    color: #ef4444;
+}
+
+.progress-loading, .progress-no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+}
+
+.progress-loading i, .progress-no-data i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.progress-modal {
+    max-width: 800px;
+    width: 90%;
+}
+
+@media (max-width: 768px) {
+    .progress-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .chart-wrapper {
+        height: 250px;
+    }
+}

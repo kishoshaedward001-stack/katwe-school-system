@@ -320,6 +320,8 @@ function App() {
   const [showTimetableAdmin, setShowTimetableAdmin] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [showAnnouncements, setShowAnnouncements] = useState(false);
+  const [showProgressModal, setShowProgressModal] = useState(false);
+const [selectedStudentForProgress, setSelectedStudentForProgress] = useState(null);
   // PWA Installation
 const [deferredPrompt, setDeferredPrompt] = useState(null);
 const [showInstallButton, setShowInstallButton] = useState(false);
@@ -941,7 +943,13 @@ const handleInstallClick = () => {
             onClick={() => { setShowDashboard(false); setShowTimetable(true); setShowTimetableAdmin(true); setShowUserManagement(false); setShowAnnouncements(false); }}>
             <i className="fas fa-calendar-alt"></i> Timetable
           </button>
-          
+          {/* Button ya Progress Chart */}
+<button className="btn btn-sm btn-info" onClick={() => {
+    setSelectedStudentForProgress(student);
+    setShowProgressModal(true);
+}}>
+    <i className="fas fa-chart-line"></i> Progress
+</button>
           {userRole === 'admin' && (
             <>
               <button className={`toggle-btn ${showTimetableAdmin ? 'active' : ''}`} 
@@ -1052,7 +1060,7 @@ const handleInstallClick = () => {
             <div className="card">
               <div className="card-header">
                 <i className="fas fa-users"></i>
-                <h2>📋 FULL LIST OF STUDENTS</h2>
+                <h2> FULL LIST OF STUDENTS</h2>
               </div>
               <div className="card-body">
                 <div className="search-section">
@@ -1281,4 +1289,21 @@ const handleInstallClick = () => {
     </div>
   );
 }
+{/* Modal ya Progress Chart */}
+{showProgressModal && selectedStudentForProgress && (
+    <div className="modal-overlay" onClick={() => setShowProgressModal(false)}>
+        <div className="modal-content progress-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+                <h2><i className="fas fa-chart-line"></i> Maendeleo ya {selectedStudentForProgress.fullName}</h2>
+                <button className="modal-close" onClick={() => setShowProgressModal(false)}>&times;</button>
+            </div>
+            <div className="modal-body">
+                <ProgressChart 
+                    studentId={selectedStudentForProgress.id} 
+                    studentName={selectedStudentForProgress.fullName}
+                />
+            </div>
+        </div>
+    </div>
+)}
 export default App;
