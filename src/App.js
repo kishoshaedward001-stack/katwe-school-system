@@ -14,7 +14,7 @@ const StatisticsDashboard = ({ students }) => {
   
   const courseStats = {};
   students.forEach(s => {
-    courseStats[s.course] = (courseStats[s.course] || 0) + 1;
+    courseStats[s.class] = (courseStats[s.class] || 0) + 1;
   });
   
   const ageGroups = {
@@ -126,7 +126,7 @@ const StatisticsDashboard = ({ students }) => {
               )}
               <span>
                 <strong>{student.fullName}</strong>
-                <small>{student.course}</small>
+                <small>{student.class}</small>
               </span>
               <span className="recent-badge">{student.gender}</span>
             </div>
@@ -242,7 +242,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="student-info-card">
           {student.photo && <img src={student.photo} alt="Student" className="student-photo-large" />}
           <h2>{student.fullName}</h2>
-          <p><strong> course:</strong> {student.course}</p>
+          <p><strong> class:</strong> {student.class}</p>
           <p><strong> age:</strong> {student.age} years</p>
           <p><strong> Gender:</strong> {student.gender === 'MALE' ? 'Male' : 'Female'}</p>
           <p><strong> Phone:</strong> {student.phone || 'Not provided'}</p>
@@ -328,7 +328,7 @@ const [deferredPrompt, setDeferredPrompt] = useState(null);
 const [showInstallButton, setShowInstallButton] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [formData, setFormData] = useState({ 
-    fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: ''
+    fullName: '', age: '', class: '', gender: '', phone: '', email: '', photo: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState(null);
@@ -512,8 +512,8 @@ const handleInstallClick = () => {
       return;
     }
 
-    if (!formData.fullName || !formData.age || !formData.course || !formData.gender) {
-      alert('please fill in all required fields (full name, age, course, gender)');
+    if (!formData.fullName || !formData.age || !formData.class || !formData.gender) {
+      alert('please fill in all required fields (full name, age, class, gender)');
       return;
     }
 
@@ -531,7 +531,7 @@ const handleInstallClick = () => {
       
       alert(editingId ? '✅ Student updated successfully!' : '✅ Student saved successfully!');
       fetchStudents();
-      setFormData({ fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: '' });
+      setFormData({ fullName: '', age: '', class: '', gender: '', phone: '', email: '', photo: '' });
       setEditingId(null);
     } catch (error) {
       console.error('Error saving student:', error);
@@ -605,6 +605,10 @@ const handleInstallClick = () => {
       subject2: '', grade2: '',
       subject3: '', grade3: '',
       subject4: '', grade4: '',
+      subject5: '', grade5: '',
+      subject6: '', grade6: '',
+      subject7: '', grade7: '',
+
       remarks: '',
       sendMethod: ''
     });
@@ -631,7 +635,7 @@ const handleInstallClick = () => {
     
     // Calculate average and division
     const points = { 'A': 4.0, 'B+': 3.5, 'B': 3.0, 'C+': 2.5, 'C': 2.0, 'D': 1.0, 'F': 0.0 };
-    const gradesList = [resultsData.grade1, resultsData.grade2, resultsData.grade3, resultsData.grade4];
+    const gradesList = [resultsData.grade1, resultsData.grade2, resultsData.grade3, resultsData.grade4, resultsData.grade5, resultsData.grade6, resultsData.grade7];
     let total = 0, count = 0;
     gradesList.forEach(g => { if (g && g !== '') { total += points[g] || 0; count++; } });
     const average = count > 0 ? (total / count).toFixed(2) : 0;
@@ -647,6 +651,9 @@ const handleInstallClick = () => {
                 subject2: resultsData.subject2, grade2: resultsData.grade2,
                 subject3: resultsData.subject3, grade3: resultsData.grade3,
                 subject4: resultsData.subject4, grade4: resultsData.grade4,
+                subject5: resultsData.subject5, grade5: resultsData.grade5,
+                subject6: resultsData.subject6, grade6: resultsData.grade6,
+                subject7: resultsData.subject7, grade7: resultsData.grade7,
                 remarks: resultsData.remarks, term: 'Term 1', year: new Date().getFullYear()
             })
         });
@@ -686,12 +693,12 @@ const handleInstallClick = () => {
   // ============ FILTER STUDENTS ============
   const filteredStudents = students.filter(s =>
     s.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.course?.toLowerCase().includes(searchTerm.toLowerCase())
+    s.class?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const downloadCSV = () => {
-    const headers = ["Full Name", "Age", "Gender", "Course", "Phone Number", "Email"];
-    const rows = students.map(s => [`"${s.fullName}"`, s.age, s.gender, `"${s.course}"`, `"${s.phone || ''}"`, `"${s.email || ''}"`]);
+    const headers = ["Full Name", "Age", "Gender", "Class", "Phone Number", "Email"];
+    const rows = students.map(s => [`"${s.fullName}"`, s.age, s.gender, `"${s.class || ''}"`, `"${s.phone || ''}"`, `"${s.email || ''}"`]);
     const csv = [headers, ...rows].map(row => row.join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv" });
     const link = document.createElement('a');
@@ -1016,8 +1023,8 @@ const handleInstallClick = () => {
                     <input type="number" name="age" value={formData.age} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
-                    <label>COURSE *</label>
-                    <input type="text" name="course" value={formData.course} onChange={handleChange} required disabled={!canAdd} />
+                    <label>CLASS *</label>
+                    <input type="text" name="class" value={formData.class} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
                     <label>GENDER *</label>
@@ -1065,7 +1072,7 @@ const handleInstallClick = () => {
               </div>
               <div className="card-body">
                 <div className="search-section">
-                  <input type="text" className="search-input" placeholder="🔍 Search by name or course..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                  <input type="text" className="search-input" placeholder="🔍 Search by name or class..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                   <span className="stat-badge">Students {filteredStudents.length}</span>
                 </div>
                 
@@ -1074,7 +1081,7 @@ const handleInstallClick = () => {
                 <div className="table-wrapper">
                   <table className="student-table">
                     <thead>
-                      <tr><th>Photo</th><th>NAME</th><th>COURSE</th><th>PHONE</th><th>EMAIL</th><th>ACTIONS</th></tr>
+                      <tr><th>Photo</th><th>NAME</th><th>CLASS</th><th>PHONE</th><th>EMAIL</th><th>ACTIONS</th></tr>
                     </thead>
                     <tbody>
                       {filteredStudents.length === 0 && !loading ? (
@@ -1086,7 +1093,7 @@ const handleInstallClick = () => {
                               {student.photo ? <img src={student.photo} alt={student.fullName} className="student-thumb" /> : <div className="no-photo">photo</div>}
                             </td>
                             <td><strong>{student.fullName}</strong><br/><small>{student.age} yrs | {student.gender}</small></td>
-                            <td>{student.course}</td>
+                            <td>{student.class || '—'}</td>
                             <td>{student.phone || '—'}</td>
                             <td>{student.email || '—'}</td>
                             <td className="action-buttons">
