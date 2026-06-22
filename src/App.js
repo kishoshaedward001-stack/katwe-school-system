@@ -951,7 +951,7 @@ function App() {
             </p>
             <hr />
             <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
-               Demo: <strong>admin</strong> / <strong>admin123</strong>
+              &copy; {new Date().getFullYear()} Katwe Secondary School. All rights reserved.
             </p>
           </div>
         </div>
