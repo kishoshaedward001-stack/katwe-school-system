@@ -59,26 +59,26 @@ const StatisticsDashboard = ({ students }) => {
           <div className="stat-icon"><i className="fas fa-book"></i></div>
           <div className="stat-info">
             <h3>{Object.keys(courseStats).length}</h3>
-            <p>Kozi Zilizopo</p>
+            <p>Classes available</p>
           </div>
         </div>
       </div>
       
       <div className="charts-row">
         <div className="chart-card">
-          <h4><i className="fas fa-venus-mars"></i> Wanafunzi kwa Jinsia</h4>
+          <h4><i className="fas fa-venus-mars"></i> Students by Gender</h4>
           <div className="gender-chart">
             <div className="gender-bar male" style={{ width: `${(maleCount/totalStudents)*100}%` }}>
-              <span>{maleCount} Wanaume ({Math.round((maleCount/totalStudents)*100)}%)</span>
+              <span>{maleCount} Male ({Math.round((maleCount/totalStudents)*100)}%)</span>
             </div>
             <div className="gender-bar female" style={{ width: `${(femaleCount/totalStudents)*100}%` }}>
-              <span>{femaleCount} Wanawake ({Math.round((femaleCount/totalStudents)*100)}%)</span>
+              <span>{femaleCount} Female ({Math.round((femaleCount/totalStudents)*100)}%)</span>
             </div>
           </div>
         </div>
         
         <div className="chart-card">
-          <h4><i className="fas fa-calendar-alt"></i> Umri wa Wanafunzi</h4>
+          <h4><i className="fas fa-calendar-alt"></i> Age of Students</h4>
           <div className="age-stats">
             {Object.entries(ageGroups).map(([group, count]) => (
               <div key={group} className="age-item">
@@ -94,7 +94,7 @@ const StatisticsDashboard = ({ students }) => {
       </div>
       
       <div className="courses-card">
-        <h4><i className="fas fa-trophy"></i> Kozi Zilizo na Wanafunzi Wengi</h4>
+        <h4><i className="fas fa-trophy"></i> Classes with Most Students</h4>
         <div className="courses-list">
           {Object.entries(courseStats)
             .sort((a,b) => b[1] - a[1])
@@ -105,14 +105,14 @@ const StatisticsDashboard = ({ students }) => {
                 <div className="course-bar-container">
                   <div className="course-bar" style={{ width: `${(count/totalStudents)*100}%` }}></div>
                 </div>
-                <span className="course-count">{count} wanafunzi</span>
+                <span className="course-count">{count} students</span>
               </div>
             ))}
         </div>
       </div>
       
       <div className="recent-card">
-        <h4><i className="fas fa-clock"></i> Wanafunzi Waliojiunga Hivi Karibuni</h4>
+        <h4><i className="fas fa-clock"></i> Recently Joined Students</h4>
         <div className="recent-list">
           {recentStudents.map(student => (
             <div key={student.id} className="recent-item">
@@ -131,7 +131,7 @@ const StatisticsDashboard = ({ students }) => {
           {recentStudents.length === 0 && (
             <div className="no-data">
               <i className="fas fa-folder-open"></i>
-              <p>Hakuna wanafunzi waliopo</p>
+              <p>No students available</p>
             </div>
           )}
         </div>
@@ -206,7 +206,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="error-container">
           <i className="fas fa-exclamation-triangle"></i>
           <p>Error: {error}</p>
-          <button onClick={onLogout} className="btn btn-primary">Jaribu tena</button>
+          <button onClick={onLogout} className="btn btn-primary">Try Again</button>
         </div>
       </div>
     );
@@ -239,37 +239,40 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="student-info-card">
           {student.photo && <img src={student.photo} alt="Student" className="student-photo-large" />}
           <h2>{student.fullName}</h2>
-          <p><strong>📚 Kozi:</strong> {student.course}</p>
-          <p><strong>🎂 Umri:</strong> {student.age} years</p>
-          <p><strong>👤 Jinsia:</strong> {student.gender === 'MALE' ? 'Mwanaume' : 'Mwanamke'}</p>
-          <p><strong>📞 Simu:</strong> {student.phone || 'Hajajazwa'}</p>
-          <p><strong>📧 Email:</strong> {student.email || 'Hajajazwa'}</p>
+          <p><strong>📚 Class:</strong> {student.course}</p>
+          <p><strong>🎂 Age:</strong> {student.age} years</p>
+          <p><strong>👤 Gender:</strong> {student.gender === 'MALE' ? 'Male' : 'Female'}</p>
+          <p><strong>📞 Phone:</strong> {student.phone || 'Not provided'}</p>
+          <p><strong>📧 Email:</strong> {student.email || 'Not provided'}</p>
         </div>
         
         <div className="results-card">
-          <h3><i className="fas fa-chart-line"></i> Matokeo ya Mitihani</h3>
+          <h3><i className="fas fa-chart-line"></i> Exam Results</h3>
           {results.length === 0 ? (
             <div className="results-placeholder">
               <i className="fas fa-file-alt"></i>
-              <p>Bado hakuna matokeo yaliyochapishwa.</p>
+              <p>No exam results available yet.</p>
             </div>
           ) : (
             <div className="results-list">
               {results.map((result, index) => (
                 <div key={index} className="result-item">
                   <div className="result-header">
-                    <span className="result-term">📅 {result.term} - {result.year}</span>
+                    <span className="result-term"> {result.term} - {result.year}</span>
                   </div>
                   <table className="result-table">
-                    <thead><tr><th>Somo</th><th>Daraja</th></tr></thead>
+                    <thead><tr><th>Subject</th><th>Grade</th></tr></thead>
                     <tbody>
                       {result.subject1 && <tr><td>{result.subject1}</td><td className="grade">{result.grade1}</td></tr>}
                       {result.subject2 && <tr><td>{result.subject2}</td><td className="grade">{result.grade2}</td></tr>}
                       {result.subject3 && <tr><td>{result.subject3}</td><td className="grade">{result.grade3}</td></tr>}
                       {result.subject4 && <tr><td>{result.subject4}</td><td className="grade">{result.grade4}</td></tr>}
+                      {result.subject5 && <tr><td>{result.subject5}</td><td className="grade">{result.grade5}</td></tr>}
+                      {result.subject6 && <tr><td>{result.subject6}</td><td className="grade">{result.grade6}</td></tr>}
+                      {result.subject7 && <tr><td>{result.subject7}</td><td className="grade">{result.grade7}</td></tr>}
                     </tbody>
                   </table>
-                  {result.remarks && <p className="result-remarks"><strong>Maoni:</strong> {result.remarks}</p>}
+                  {result.remarks && <p className="result-remarks"><strong>Remarks:</strong> {result.remarks}</p>}
                 </div>
               ))}
             </div>
@@ -533,15 +536,15 @@ function App() {
   // ==================== PARENT CODE GENERATION (Admin only) ====================
   const generateParentCode = async (student) => {
     if (!canEdit) {
-      alert('⚠️ Samahani! Wewe ni user wa kawaida, huna ruhusa ya kuunda code za wazazi.');
+      alert('Sorry! You are a regular user, you do not have permission to generate parent codes.');
       return;
     }
 
-    const parentName = prompt('Jina la mzazi:');
+    const parentName = prompt('Full name of the parent:');
     if (!parentName) return;
 
-    const phone = prompt('Namba ya simu ya mzazi:');
-    const email = prompt('Barua pepe ya mzazi:');
+    const phone = prompt('Phone number of the parent:');
+    const email = prompt('Email address of the parent:');
 
     try {
       const response = await fetch(`${API_URL}/parents/generate`, {
@@ -556,7 +559,7 @@ function App() {
       });
       const data = await response.json();
       if (data.success) {
-        alert(`✅ Code ya mzazi: ${data.parentCode}\n\nWape mzazi code hii kuingia kwenye Parent Portal.`);
+        alert(`✅ Parent code: ${data.parentCode}\n\nShare this code with the parent to access the Parent Portal.`);
         if (email) {
           try {
             await fetch(`${API_URL}/send-email`, {
@@ -659,11 +662,11 @@ function App() {
 
   const handleDelete = async (id) => {
     if (!canDelete) {
-      alert('⚠️ Samahani! Wewe ni user wa kawaida, huna ruhusa ya kufuta wanafunzi.');
+      alert('Sorry! You are a regular user, you do not have permission to delete students.');
       return;
     }
-    
-    if (window.confirm('Je, una uhakika unataka kufuta mwanafunzi huyu?')) {
+
+    if (window.confirm('Are you sure you want to delete this student?')) {
       try {
         await fetch(`${API_URL}/students/${id}`, { method: 'DELETE' });
         alert('✅ Mwanafunzi amefutwa!');
@@ -806,13 +809,13 @@ function App() {
   );
 
   const downloadCSV = () => {
-    const headers = ["JINA KAMILI", "UMRI", "JINSIA", "KOZI", "NAMBA YA SIMU", "EMAIL"];
+    const headers = ["FULL NAME", "AGE", "GENDER", "CLASS", "PHONE NUMBER", "EMAIL"];
     const rows = students.map(s => [`"${s.fullName}"`, s.age, s.gender, `"${s.course}"`, `"${s.phone || ''}"`, `"${s.email || ''}"`]);
     const csv = [headers, ...rows].map(row => row.join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv" });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = "wanafunzi_katwe_report.csv";
+    link.download = "students_katwe_report.csv";
     link.click();
   };
 
@@ -824,14 +827,14 @@ function App() {
           <div className="login-header">
             <i className="fas fa-user-plus"></i>
             <h1>KATWE SECONDARY SCHOOL</h1>
-            <p>Jisajili kwa akaunti yako</p>
+            <p>REGISTER YOUR ACCOUNT</p>
           </div>
           
           {registerSuccess ? (
             <div className="success-message">
               <i className="fas fa-check-circle"></i>
               <h3>✅ Registration Successful!</h3>
-              <p>Akaunti yako imeundwa! Sasa unaweza kuingia.</p>
+              <p>Please login with your credentials.</p>
               <button onClick={() => {
                 setShowRegister(false);
                 setRegisterSuccess(false);
@@ -849,7 +852,7 @@ function App() {
               </div>
               <div className="form-group">
                 <label><i className="fas fa-lock"></i> Password *</label>
-                <input type="password" name="password" value={registerData.password} onChange={handleRegisterChange} placeholder="Angalau herufi 6" required />
+                <input type="password" name="password" value={registerData.password} onChange={handleRegisterChange} placeholder="Atleast 8 characters" required />
               </div>
               <div className="form-group">
                 <label><i className="fas fa-lock"></i> Confirm Password *</label>
@@ -864,7 +867,7 @@ function App() {
                 <input type="tel" name="phone" value={registerData.phone} onChange={handleRegisterChange} placeholder="0712345678" />
               </div>
               {registerError && <div className="error-message">{registerError}</div>}
-              <button type="submit" className="btn-login">📝 JISAJILI</button>
+              <button type="submit" className="btn-login">REGISTER</button>
               <button type="button" onClick={() => setShowRegister(false)} className="btn-outline" style={{ marginTop: '10px', width: '100%' }}>🔙 Rudi kwa Login</button>
             </form>
           )}
@@ -889,7 +892,7 @@ function App() {
               <input type="text" value={parentCode} onChange={(e) => setParentCode(e.target.value)} placeholder="Weka code yako (kwa mfano: 123456)" required />
             </div>
             {parentLoginError && <div className="error-message">{parentLoginError}</div>}
-            <button type="submit" className="btn-login">🔓 INGIA</button>
+            <button type="submit" className="btn-login">LOGIN</button>
           </form>
           <div className="login-footer">
             <p>Huna code? Wasiliana na shule kwa msaada.</p>
@@ -988,7 +991,7 @@ function App() {
           </span>
         </div>
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
-        <p>STUDENT ANALYTICS & MANAGEMENT HUB // MODAL YA MATOKEO</p>
+        <p>STUDENT MANAGEMENT & RESULTS</p>
         
         <div className="toggle-buttons">
           <button 
@@ -1035,7 +1038,7 @@ function App() {
         </div>
         
         <button onClick={handleLogout} className="logout-btn">
-          <i className="fas fa-sign-out-alt"></i> TONDA MFUMO
+          <i className="fas fa-sign-out-alt"></i> LOGOUT
         </button>
       </div>
 
