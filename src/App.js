@@ -1055,71 +1055,7 @@ function App() {
         <StatisticsDashboard students={students} />
       ) : (
         <>
-          <div className="dashboard-grid">
-            {/* FORM YA KUSAJILI WANAFUNZI */}
-            <div className="card">
-              <div className="card-header">
-                <i className="fas fa-user-plus"></i>
-                <h2>{editingId ? '📝 HARIRI MWANAFUNZI' : '📝 SAJILI MWANAFUNZI'}</h2>
-                {!canAdd && <span className="permission-badge"><i className="fas fa-lock"></i> Read Only</span>}
-              </div>
-              <div className="card-body">
-                {!canAdd && (
-                  <div className="permission-message">
-                    <i className="fas fa-info-circle"></i>
-                    <p>Samahani, wewe ni user wa kawaida. Huna ruhusa ya kuongeza au kuhariri wanafunzi.</p>
-                  </div>
-                )}
-                <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <label>JINA KAMILI *</label>
-                    <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required disabled={!canAdd} />
-                  </div>
-                  <div className="form-group">
-                    <label>UMRI *</label>
-                    <input type="number" name="age" value={formData.age} onChange={handleChange} required disabled={!canAdd} />
-                  </div>
-                  <div className="form-group">
-                    <label> KIDATO*</label>
-                    <input type="text" name="class" value={formData.class} onChange={handleChange} required disabled={!canAdd} />
-                  </div>
-                  <div className="form-group">
-                    <label>JINSIA *</label>
-                    <select name="gender" value={formData.gender} onChange={handleChange} required disabled={!canAdd}>
-                      <option value="">Chagua Jinsia...</option>
-                      <option value="MALE">MALE (Mavulana)</option>
-                      <option value="FEMALE">FEMALE (Masichana)</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Namba ya Simu (Kwa SMS)</label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} disabled={!canAdd} />
-                  </div>
-                  <div className="form-group">
-                    <label>Barua pepe (Email)</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} disabled={!canAdd} />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>PICHA YA MWANAFUNZI</label>
-                    <input type="file" accept="image/*" onChange={handlePhotoUpload} disabled={!canAdd || uploadingPhoto} />
-                    {uploadingPhoto && <div className="uploading-text"><i className="fas fa-spinner fa-spin"></i> Inapakia picha...</div>}
-                    {formData.photo && (
-                      <div className="photo-preview">
-                        <img src={formData.photo} alt="Student" />
-                        <button type="button" onClick={() => setFormData({...formData, photo: ''})} className="btn-remove-photo">Futa Picha</button>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {canAdd && (
-                    <button type="submit" className="btn btn-primary">
-                      <i className="fas fa-save"></i> {editingId ? 'SASISHA' : 'HIFADHI'}
-                    </button>
-                  )}
-                </form>
-              </div>
-            </div>
+         
 
             {/* ORODHA YA WANAFUNZI */}
             <div className="card">
@@ -1138,7 +1074,7 @@ function App() {
                 <div className="table-wrapper">
                   <table className="student-table">
                     <thead>
-                      <tr><th>PICHA</th><th>JINA</th><th>KOZI</th><th>SIMU</th><th>EMAIL</th><th>VITENDO</th></tr>
+                      <tr><th>PICHA</th><th>JINA</th><th>DARASA</th><th>SIMU</th><th>EMAIL</th><th>VITENDO</th></tr>
                     </thead>
                     <tbody>
                       {filteredStudents.length === 0 && !loading ? (
@@ -1181,7 +1117,7 @@ function App() {
                 </div>
               </div>
             </div>
-          </div>
+      
 
           {/* MODAL YA KUJAZA MATOKEO */}
           {showModal && selectedStudent && (
