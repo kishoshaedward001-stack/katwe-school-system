@@ -45,14 +45,14 @@ const StatisticsDashboard = ({ students }) => {
           <div className="stat-icon"><i className="fas fa-female"></i></div>
           <div className="stat-info">
             <h3>{femaleCount}</h3>
-            <p>Wanawake</p>
+            <p>Wasichana</p>
           </div>
         </div>
         <div className="stat-card orange">
           <div className="stat-icon"><i className="fas fa-male"></i></div>
           <div className="stat-info">
             <h3>{maleCount}</h3>
-            <p>Wanaume</p>
+            <p>Wavulana</p>
           </div>
         </div>
         <div className="stat-card purple">
