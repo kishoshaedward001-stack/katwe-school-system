@@ -29,8 +29,9 @@ const StatisticsDashboard = ({ students }) => {
   return (
     <div className="dashboard-stats">
       <div className="dashboard-header">
-        <h2><i className="fas fa-chart-pie"></i> Dashboard ya Takwiri</h2>
-        <p>Muhtasari wa takwiri za wanafunzi wote</p>
+        <h2><i className="fas fa-chart-pie"></i> Dashboard ya Takwimu.
+        </h2>
+        <p>Muhtasari wa takwimu za wanafunzi wote</p>
       </div>
       
       <div className="stats-grid">
@@ -201,7 +202,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="school-header">
           <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
           <p>Parent Portal</p>
-          <button onClick={onLogout} className="logout-btn">TONDA</button>
+          <button onClick={onLogout} className="logout-btn">Logout</button>
         </div>
         <div className="error-container">
           <i className="fas fa-exclamation-triangle"></i>
@@ -218,7 +219,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="school-header">
           <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
           <p>Parent Portal</p>
-          <button onClick={onLogout} className="logout-btn">TONDA</button>
+          <button onClick={onLogout} className="logout-btn">Logout</button>
         </div>
         <div className="error-container">
           <p>Hakuna taarifa za mwanafunzi</p>
@@ -232,7 +233,7 @@ const ParentDashboard = ({ parentData, onLogout }) => {
       <div className="school-header">
         <h1><i className="fas fa-graduation-cap"></i> KATWE SECONDARY SCHOOL</h1>
         <p>Parent Portal - Karibu {parentData.parentname}</p>
-        <button onClick={onLogout} className="logout-btn">TONDA MFUMO</button>
+        <button onClick={onLogout} className="logout-btn">Logout</button>
       </div>
 
       <div className="parent-dashboard">
@@ -325,7 +326,7 @@ function App() {
   const [selectedStudentForProgress, setSelectedStudentForProgress] = useState(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: ''
+    fullName: '', age: '', class: '', gender: '', phone: '', email: '', photo: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState(null);
@@ -643,7 +644,7 @@ function App() {
       
       alert(editingId ? '✅ Mwanafunzi amesasishwa!' : '✅ Mwanafunzi amehifadhiwa!');
       fetchStudents();
-      setFormData({ fullName: '', age: '', course: '', gender: '', phone: '', email: '', photo: '' });
+      setFormData({ fullName: '', age: '', class: '', gender: '', phone: '', email: '', photo: '' });
       setEditingId(null);
     } catch (error) {
       console.error('Error saving student:', error);
@@ -1080,14 +1081,14 @@ function App() {
                   </div>
                   <div className="form-group">
                     <label> KIDATO*</label>
-                    <input type="text" name="course" value={formData.course} onChange={handleChange} required disabled={!canAdd} />
+                    <input type="text" name="class" value={formData.class} onChange={handleChange} required disabled={!canAdd} />
                   </div>
                   <div className="form-group">
                     <label>JINSIA *</label>
                     <select name="gender" value={formData.gender} onChange={handleChange} required disabled={!canAdd}>
                       <option value="">Chagua Jinsia...</option>
-                      <option value="MALE">MALE (Mwanaume)</option>
-                      <option value="FEMALE">FEMALE (Mwanamke)</option>
+                      <option value="MALE">MALE (Mavulana)</option>
+                      <option value="FEMALE">FEMALE (Masichana)</option>
                     </select>
                   </div>
                   <div className="form-group">
