@@ -240,11 +240,11 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="student-info-card">
           {student.photo && <img src={student.photo} alt="Student" className="student-photo-large" />}
           <h2>{student.fullName}</h2>
-          <p><strong>📚 Class:</strong> {student.course}</p>
-          <p><strong>🎂 Age:</strong> {student.age} years</p>
-          <p><strong>👤 Gender:</strong> {student.gender === 'MALE' ? 'Male' : 'Female'}</p>
-          <p><strong>📞 Phone:</strong> {student.phone || 'Not provided'}</p>
-          <p><strong>📧 Email:</strong> {student.email || 'Not provided'}</p>
+          <p><strong> Class:</strong> {student.course}</p>
+          <p><strong> Age:</strong> {student.age} years</p>
+          <p><strong> Gender:</strong> {student.gender === 'MALE' ? 'Male' : 'Female'}</p>
+          <p><strong> Phone:</strong> {student.phone || 'Not provided'}</p>
+          <p><strong> Email:</strong> {student.email || 'Not provided'}</p>
         </div>
         
         <div className="results-card">
@@ -642,7 +642,7 @@ function App() {
 
       if (!response.ok) throw new Error('Failed to save');
       
-      alert(editingId ? '✅ Mwanafunzi amesasishwa!' : '✅ Mwanafunzi amehifadhiwa!');
+      alert(editingId ? '✅ Mwanafunzi amesajiliwa!' : '✅ Mwanafunzi amehifadhiwa!');
       fetchStudents();
       setFormData({ fullName: '', age: '', class: '', gender: '', phone: '', email: '', photo: '' });
       setEditingId(null);
@@ -737,7 +737,7 @@ function App() {
       const saveData = await saveResponse.json();
       
       if (!saveData.success) {
-        alert('❌ Imeshindwa kuhifadhi matokeo!');
+        alert(' Imeshindwa kuhifadhi matokeo!');
         setSendingStatus('');
         return;
       }
@@ -766,7 +766,7 @@ function App() {
           setShowModal(false);
           fetchStudents();
         } else {
-          alert('⚠️ Matokeo yamehifadhiwa lakini imeshindwa kutuma email!');
+          alert('Matokeo yamehifadhiwa lakini imeshindwa kutuma email!');
         }
       } 
       else if (resultsData.sendMethod === 'sms') {
@@ -792,7 +792,7 @@ function App() {
           setShowModal(false);
           fetchStudents();
         } else {
-          alert('⚠️ Matokeo yamehifadhiwa lakini imeshindwa kutuma SMS!');
+          alert('Matokeo yamehifadhiwa lakini imeshindwa kutuma SMS!');
         }
       }
     } catch (error) {
