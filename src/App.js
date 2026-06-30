@@ -848,8 +848,37 @@ function App() {
                 <input type="text" name="username" value={registerData.username} onChange={handleRegisterChange} placeholder="Chagua username yako" required />
               </div>
               <div className="form-group">
+                <label><i className="fas fa-id-card"></i> Jina (Full Name) *</label>
+                <input type="text" name="fullName" value={registerData.fullName} onChange={handleRegisterChange} placeholder="Jina lako kamili" required />
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-birthday-cake"></i> Umri (Age)</label>
+                <input type="number" name="age" value={registerData.age || ''} onChange={handleRegisterChange} placeholder="Umri wako" min="1" max="120" />
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-venus-mars"></i> Jinsia (Gender)</label>
+                <select name="gender" value={registerData.gender || ''} onChange={handleRegisterChange}>
+                  <option value="">Chagua jinsia</option>
+                  <option value="MALE">Kiume (Male)</option>
+                  <option value="FEMALE">Kike (Female)</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-phone"></i> Namba ya Simu (Phone Number)</label>
+                <input type="tel" name="phone" value={registerData.phone} onChange={handleRegisterChange} placeholder="0712345678" />
+              </div>
+              <div className="form-group">
                 <label><i className="fas fa-envelope"></i> Email *</label>
                 <input type="email" name="email" value={registerData.email} onChange={handleRegisterChange} placeholder="barua@pepe.com" required />
+              </div>
+              <div className="form-group">
+                <label><i className="fas fa-image"></i> Picha (Upload Picture)</label>
+                <input type="file" name="photo" accept="image/*" onChange={(e) => {
+                  if (e.target.files[0]) {
+                    setRegisterData({ ...registerData, photo: e.target.files[0] });
+                  }
+                }} />
+                {registerData.photo && <small style={{ color: 'green' }}>📸 {registerData.photo.name}</small>}
               </div>
               <div className="form-group">
                 <label><i className="fas fa-lock"></i> Password *</label>
@@ -858,14 +887,6 @@ function App() {
               <div className="form-group">
                 <label><i className="fas fa-lock"></i> Confirm Password *</label>
                 <input type="password" name="confirmPassword" value={registerData.confirmPassword} onChange={handleRegisterChange} placeholder="Andika password tena" required />
-              </div>
-              <div className="form-group">
-                <label><i className="fas fa-id-card"></i> Full Name *</label>
-                <input type="text" name="fullName" value={registerData.fullName} onChange={handleRegisterChange} placeholder="Jina lako kamili" required />
-              </div>
-              <div className="form-group">
-                <label><i className="fas fa-phone"></i> Phone Number</label>
-                <input type="tel" name="phone" value={registerData.phone} onChange={handleRegisterChange} placeholder="0712345678" />
               </div>
               {registerError && <div className="error-message">{registerError}</div>}
               <button type="submit" className="btn-login">REGISTER</button>
@@ -1055,6 +1076,7 @@ function App() {
         <StatisticsDashboard students={students} />
       ) : (
         <>
+        <div className="card"></div>
          
 
             {/* ORODHA YA WANAFUNZI */}
@@ -1117,7 +1139,7 @@ function App() {
                 </div>
               </div>
             </div>
-      
+
 
           {/* MODAL YA KUJAZA MATOKEO */}
           {showModal && selectedStudent && (
