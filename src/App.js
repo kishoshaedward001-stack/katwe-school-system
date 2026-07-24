@@ -849,7 +849,7 @@ function App() {
               </div>
               <div className="form-group">
                 <label><i className="fas fa-id-card"></i> Jina (Full Name) *</label>
-                <input type="text" name="fullName" value={registerData.fullName} onChange={handleRegisterChange} placeholder="Jina lako kamili" required />
+                <input type="text" name="fullName" value={registerData.fullName} onChange={handleRegisterChange} required placeholder="Jina lako kamili" required />
               </div>
               <div className="form-group">
                 <label><i className="fas fa-birthday-cake"></i> Umri (Age)</label>
