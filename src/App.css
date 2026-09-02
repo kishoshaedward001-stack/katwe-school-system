@@ -2559,7 +2559,7 @@ textarea:focus {
 }
 
 .summary-item strong.positive {
-    color: #10b981;
+    color: hsl(160, 27%, 67%);
 }
 
 .summary-item strong.negative {
