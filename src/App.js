@@ -239,11 +239,11 @@ const ParentDashboard = ({ parentData, onLogout }) => {
         <div className="student-info-card">
           {student.photo && <img src={student.photo} alt="Student" className="student-photo-large" />}
           <h2>{student.fullName}</h2>
-          <p><strong>📚 Kozi:</strong> {student.course}</p>
-          <p><strong>🎂 Umri:</strong> {student.age} years</p>
-          <p><strong>👤 Jinsia:</strong> {student.gender === 'MALE' ? 'Mwanaume' : 'Mwanamke'}</p>
-          <p><strong>📞 Simu:</strong> {student.phone || 'Hajajazwa'}</p>
-          <p><strong>📧 Email:</strong> {student.email || 'Hajajazwa'}</p>
+          <p><strong> Kozi:</strong> {student.course}</p>
+          <p><strong> Umri:</strong> {student.age} years</p>
+          <p><strong> Jinsia:</strong> {student.gender === 'MALE' ? 'Mwanaume' : 'Mwanamke'}</p>
+          <p><strong> Simu:</strong> {student.phone || 'Hajajazwa'}</p>
+          <p><strong> Email:</strong> {student.email || 'Hajajazwa'}</p>
         </div>
         
         <div className="results-card">
@@ -864,7 +864,7 @@ function App() {
                 <input type="tel" name="phone" value={registerData.phone} onChange={handleRegisterChange} placeholder="0712345678" />
               </div>
               {registerError && <div className="error-message">{registerError}</div>}
-              <button type="submit" className="btn-login">📝 JISAJILI</button>
+              <button type="submit" className="btn-login"> JISAJILI</button>
               <button type="button" onClick={() => setShowRegister(false)} className="btn-outline" style={{ marginTop: '10px', width: '100%' }}>🔙 Rudi kwa Login</button>
             </form>
           )}
@@ -889,7 +889,7 @@ function App() {
               <input type="text" value={parentCode} onChange={(e) => setParentCode(e.target.value)} placeholder="Weka code yako (kwa mfano: 123456)" required />
             </div>
             {parentLoginError && <div className="error-message">{parentLoginError}</div>}
-            <button type="submit" className="btn-login">🔓 INGIA</button>
+            <button type="submit" className="btn-login">LOGIN</button>
           </form>
           <div className="login-footer">
             <p>Huna code? Wasiliana na shule kwa msaada.</p>
@@ -946,12 +946,12 @@ function App() {
             </p>
             <p>
               <button onClick={() => { setShowParentLogin(true); setLoginError(''); }} className="link-btn">
-                👨‍👩‍👧 Mzazi / Guardian
+                 Mzazi / Guardian
               </button>
             </p>
             <hr />
             <p style={{ fontSize: '0.75rem', color: '#64748b' }}>
-              💡 Demo: <strong>admin</strong> / <strong>admin123</strong>
+             
             </p>
           </div>
         </div>
@@ -976,7 +976,7 @@ function App() {
           fontSize: '1rem'
         }}
       >
-        🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |  💪 KARIBU SANA! 💪  |  ⭐ RATE US 5 STARS! ⭐  |  📞 CALL US: +255 XXX XXX 📞  |  ✉️ EMAIL: info@katwe.edu ✉️
+        🔥 HELLO! 🔥  |  ✨ WELCOME TO KATWE SECONDARY SCHOOL ✨  |  📚 STUDENT ANALYTICS & MANAGEMENT HUB 📚  |  🎓 ENJOY OUR WEBSITE! 🎓  |  💪 KARIBU SANA! 💪  |  ⭐  |  📞 CALL US: +255 614910462 📞  |  ✉️ EMAIL: info@katwe.edu ✉️
       </marquee>
       
       <div className="school-header">
@@ -1058,7 +1058,7 @@ function App() {
             <div className="card">
               <div className="card-header">
                 <i className="fas fa-user-plus"></i>
-                <h2>{editingId ? '📝 HARIRI MWANAFUNZI' : '📝 SAJILI MWANAFUNZI'}</h2>
+                <h2>{editingId ? ' HARIRI MWANAFUNZI' : 'SAJILI MWANAFUNZI'}</h2>
                 {!canAdd && <span className="permission-badge"><i className="fas fa-lock"></i> Read Only</span>}
               </div>
               <div className="card-body">
@@ -1201,7 +1201,7 @@ function App() {
             <div className="card">
               <div className="card-header">
                 <i className="fas fa-users"></i>
-                <h2>📋 ORODHA RASMI YA WANAFUNZI</h2>
+                <h2> ORODHA RASMI YA WANAFUNZI</h2>
               </div>
               <div className="card-body">
                 <div className="search-section">
@@ -1235,7 +1235,7 @@ function App() {
                       {filteredStudents.length === 0 && !loading ? (
                         <tr>
                           <td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>
-                            📭 Hakuna wanafunzi waliosajiliwa
+                             Hakuna wanafunzi waliosajiliwa
                           </td>
                         </tr>
                       ) : (
